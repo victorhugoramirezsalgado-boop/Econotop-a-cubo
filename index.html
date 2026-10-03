@@ -34,6 +34,18 @@ td.fin{outline:3px solid var(--bad);outline-offset:-3px}
 .legend span{display:inline-block;padding:2px 8px;border-radius:6px;margin-right:6px;font-size:.85rem}
 .beta{font-size:.75rem;background:var(--hi);padding:1px 6px;border-radius:6px}
 #recibido{display:none;border-color:var(--ok)}
+.escena{perspective:900px;height:340px;display:flex;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none}
+.cubo{width:220px;height:220px;position:relative;transform-style:preserve-3d}
+.cubo .cara{position:absolute;inset:0;width:220px;height:220px;border:1px solid var(--tx);box-shadow:0 0 0 1px var(--ln)}
+.cubo canvas{width:100%;height:100%;display:block}
+.cubo .c1{transform:translateZ(110px)}.cubo .c2{transform:rotateY(90deg) translateZ(110px)}
+.cubo .c3{transform:rotateY(180deg) translateZ(110px)}.cubo .c4{transform:rotateY(-90deg) translateZ(110px)}
+.cubo .c5{transform:rotateX(90deg) translateZ(110px)}.cubo .c6{transform:rotateX(-90deg) translateZ(110px)}
+.escena.cruz{perspective:none;height:auto;padding:8px 0}
+.escena.cruz .cubo{transform:none!important;display:grid;grid-template-columns:repeat(4,1fr);gap:2px;width:min(100%,440px);height:auto}
+.escena.cruz .cara{position:static;transform:none;width:auto;height:auto;aspect-ratio:1}
+.escena.cruz .c5{grid-column:2;grid-row:1}.escena.cruz .c4{grid-column:1;grid-row:2}.escena.cruz .c1{grid-column:2;grid-row:2}
+.escena.cruz .c2{grid-column:3;grid-row:2}.escena.cruz .c3{grid-column:4;grid-row:2}.escena.cruz .c6{grid-column:2;grid-row:3}
 </style>
 </head>
 <body>
@@ -74,6 +86,9 @@ td.fin{outline:3px solid var(--bad);outline-offset:-3px}
 
 <section class="card">
   <h2>3 · Ver el cubo</h2>
+  <div class="escena" id="escena"><div class="cubo" id="cubo"></div></div>
+  <button class="sec" id="vista">Ver desarrollo en cruz</button>
+  <p class="mu">Gira el cubo con el dedo. Toca una cara para ver sus números abajo.</p>
   <div class="tabs" id="tabs"></div>
   <p class="legend"><span style="background:var(--hi)">casilla usada</span><span style="outline:2px solid var(--ok)">inicio</span><span style="outline:2px solid var(--bad)">final</span></p>
   <p id="marcas" class="mu"></p>
@@ -215,7 +230,43 @@ function grid(){
     h+=`<th>${A[r]}</th></tr>`;
   }
   $('grid').innerHTML=h+cab;
+  dibujarCubo();
 }
+
+function dibujarCubo(){
+  const cubo=$('cubo');if(!cubo)return;
+  if(!cubo.children.length)for(let f=1;f<=6;f++){const d=document.createElement('div');
+    d.className='cara c'+f;d.dataset.f=f;d.innerHTML='<canvas width="440" height="440"></canvas>';cubo.appendChild(d);}
+  const A=alfa(),set=new Set(usadas),ini=usadas[0],fin=usadas[usadas.length-1];
+  const st=getComputedStyle(document.documentElement),v=k=>st.getPropertyValue(k).trim();
+  for(let f=1;f<=6;f++){
+    const cv=cubo.querySelector('.c'+f+' canvas'),x=cv.getContext('2d'),S=440,c=S/28;
+    x.fillStyle=v('--card');x.fillRect(0,0,S,S);
+    x.fillStyle=v('--tx');x.font='bold '+(c*0.75)+'px -apple-system,sans-serif';x.textAlign='center';x.textBaseline='middle';
+    for(let i=0;i<26;i++){const p=c*(i+1.5);
+      x.fillText(A[i],p,c/2);x.fillText(A[i],p,S-c/2);x.fillText(A[i],c/2,p);x.fillText(A[i],S-c/2,p);}
+    for(let r=0;r<26;r++)for(let k=0;k<26;k++){const n=celda(f,r,k),px=c*(k+1),py=c*(r+1);
+      if(set.has(n)){x.fillStyle=n===ini?v('--ok'):n===fin?v('--bad'):'#f2b705';x.fillRect(px,py,c,c);}}
+    x.strokeStyle=v('--ln');x.lineWidth=1;x.beginPath();
+    for(let i=0;i<=26;i++){x.moveTo(c,c*(i+1));x.lineTo(S-c,c*(i+1));x.moveTo(c*(i+1),c);x.lineTo(c*(i+1),S-c);}
+    x.stroke();
+    x.globalAlpha=f===cara?.35:.18;x.fillStyle=v('--ac');x.font='bold 150px -apple-system,sans-serif';x.fillText(f,S/2,S/2+8);
+    x.globalAlpha=1;
+  }
+}
+
+let rx=-22,ry=35,arrastre=null,auto=true;
+function girar(){const cubo=$('cubo');if(cubo)cubo.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;}
+function animar(){if(auto&&!arrastre&&!$('escena').classList.contains('cruz')){ry+=0.25;girar();}requestAnimationFrame(animar);}
+function elegirCara(f){cara=f;tabs();grid();$('grid').scrollIntoView({behavior:'smooth',block:'nearest'});}
+$('escena').addEventListener('pointerdown',e=>{arrastre={x:e.clientX,y:e.clientY,rx,ry,mov:false};auto=false;});
+window.addEventListener('pointermove',e=>{if(!arrastre||$('escena').classList.contains('cruz'))return;
+  const dx=e.clientX-arrastre.x,dy=e.clientY-arrastre.y;if(Math.abs(dx)+Math.abs(dy)>6)arrastre.mov=true;
+  ry=arrastre.ry+dx*0.5;rx=Math.max(-89,Math.min(89,arrastre.rx-dy*0.5));girar();});
+window.addEventListener('pointerup',e=>{if(!arrastre)return;const mov=arrastre.mov;arrastre=null;
+  if(!mov){const el=document.elementFromPoint(e.clientX,e.clientY),cd=el&&el.closest('.cara');if(cd)elegirCara(+cd.dataset.f);}});
+$('vista').onclick=()=>{const es=$('escena').classList.toggle('cruz');
+  $('vista').textContent=es?'Ver cubo en 3D':'Ver desarrollo en cruz';if(!es)girar();};
 
 function copiar(t){
   if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>alert('Copiado'),()=>prompt('Copia:',t));
@@ -252,7 +303,7 @@ $('traducir').onclick=()=>{const t=$('texto').textContent.trim();if(!t){alert('P
 $('grid').onclick=e=>{const n=+e.target.dataset.n;if(!n)return;const p=parte(n),A=alfa();
   $('celdaInfo').textContent=`Casilla ${n} · lado ${p.f} · fila ${A[p.r]} · columna ${A[p.c]} → “${A[p.r]}${A[p.c]}”`;};
 
-armarFrases();verClave();tabs();grid();recibir();
+armarFrases();verClave();tabs();grid();recibir();girar();animar();
 </script>
 </body>
 </html>
