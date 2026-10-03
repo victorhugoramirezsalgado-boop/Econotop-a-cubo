@@ -1,309 +1,449 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>El Cubo de la Comunicación · Econotopía</title>
-<meta name="author" content="Víctor Hugo Ramírez Salgado">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>El Cubo de la Comunicación</title>
 <style>
-:root{--bg:#f6f4ef;--card:#fff;--tx:#1d1d1f;--mu:#6b6b70;--ln:#d9d6cf;--ac:#1f5fbf;--ok:#1a8a4a;--bad:#c0392b;--hi:#ffe08a}
-@media (prefers-color-scheme:dark){:root{--bg:#141416;--card:#1e1e22;--tx:#eee;--mu:#9a9aa2;--ln:#34343a;--ac:#6ea3ff;--ok:#3fcf7d;--bad:#ff6b5b;--hi:#5a4a10}}
+:root{--bg:#f6f4ef;--fg:#1d1d1f;--mut:#666;--card:#fff;--line:#a9a393;--acc:#c0392b;--face:#fffdf8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121214;--fg:#eee;--mut:#9a9aa0;--card:#1c1c20;--line:#5d5d68;--acc:#ff6b5a;--face:#1a1a1e}}
+:root[data-theme="dark"]{--bg:#121214;--fg:#eee;--mut:#9a9aa0;--card:#1c1c20;--line:#5d5d68;--acc:#ff6b5a;--face:#1a1a1e}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 -apple-system,system-ui,Segoe UI,Roboto,sans-serif}
-header,main,footer{max-width:980px;margin:auto;padding:16px}
-h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:0 0 .5em}
-.mu{color:var(--mu);font-size:.9rem}
-.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:16px;margin:14px 0}
-textarea,select,input,button{font:inherit;color:inherit}
-textarea,select,input{background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:8px;width:100%}
-textarea{min-height:60px;resize:vertical}
-button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:10px 14px;margin:4px 4px 4px 0;cursor:pointer}
-button.sec{background:transparent;color:var(--ac);border:1px solid var(--ac)}
-.row{display:grid;grid-template-columns:1fr 110px;gap:8px;margin:8px 0}
-.out{font-family:ui-monospace,Menlo,monospace;font-size:.9rem;white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:10px;min-height:44px}
-.tabs button{padding:8px 12px}
-.tabs button.on{background:var(--tx);color:var(--bg)}
-.gridwrap{overflow:auto;max-height:70vh;border:1px solid var(--ln);border-radius:8px}
-table{border-collapse:collapse;font-family:ui-monospace,Menlo,monospace}
-td,th{border:1px solid var(--ln);min-width:38px;height:30px;text-align:center;font-size:11px;padding:0 2px}
-th{background:var(--tx);color:var(--bg);font-size:13px;font-weight:700}
-td.u{background:var(--hi);font-weight:700}
-td.ini{outline:3px solid var(--ok);outline-offset:-3px}
-td.fin{outline:3px solid var(--bad);outline-offset:-3px}
-.key{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;word-break:break-all}
-.legend span{display:inline-block;padding:2px 8px;border-radius:6px;margin-right:6px;font-size:.85rem}
-.beta{font-size:.75rem;background:var(--hi);padding:1px 6px;border-radius:6px}
-#recibido{display:none;border-color:var(--ok)}
-.escena{perspective:900px;height:340px;display:flex;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none}
-.cubo{width:220px;height:220px;position:relative;transform-style:preserve-3d}
-.cubo .cara{position:absolute;inset:0;width:220px;height:220px;border:1px solid var(--tx);box-shadow:0 0 0 1px var(--ln)}
-.cubo canvas{width:100%;height:100%;display:block}
-.cubo .c1{transform:translateZ(110px)}.cubo .c2{transform:rotateY(90deg) translateZ(110px)}
-.cubo .c3{transform:rotateY(180deg) translateZ(110px)}.cubo .c4{transform:rotateY(-90deg) translateZ(110px)}
-.cubo .c5{transform:rotateX(90deg) translateZ(110px)}.cubo .c6{transform:rotateX(-90deg) translateZ(110px)}
-.escena.cruz{perspective:none;height:auto;padding:8px 0}
-.escena.cruz .cubo{transform:none!important;display:grid;grid-template-columns:repeat(4,1fr);gap:2px;width:min(100%,440px);height:auto}
-.escena.cruz .cara{position:static;transform:none;width:auto;height:auto;aspect-ratio:1}
-.escena.cruz .c5{grid-column:2;grid-row:1}.escena.cruz .c4{grid-column:1;grid-row:2}.escena.cruz .c1{grid-column:2;grid-row:2}
-.escena.cruz .c2{grid-column:3;grid-row:2}.escena.cruz .c3{grid-column:4;grid-row:2}.escena.cruz .c6{grid-column:2;grid-row:3}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Georgia,'Times New Roman',serif;line-height:1.5}
+header{text-align:center;padding:22px 16px 6px}
+h1{margin:0;font-size:clamp(24px,6vw,40px)}
+.sub{color:var(--mut);font-size:14px;margin-top:4px}.sub b{color:var(--fg)}
+main{max-width:860px;margin:0 auto;padding:0 14px 40px}
+.stage{height:min(92vw,520px);overflow:hidden;perspective:1100px;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab;margin-top:6px}
+.cube{position:relative;transform-style:preserve-3d;width:var(--S);height:var(--S)}
+.face{position:absolute;inset:0;display:grid;background:var(--face);border:1.5px solid var(--fg);backface-visibility:hidden;font-family:Arial,sans-serif;overflow:hidden}
+.face i{font-style:normal;display:flex;align-items:center;justify-content:center;font-size:calc(var(--S)/var(--G)*.5);font-weight:600;color:var(--fg);border:1px solid var(--line)}
+.face i.l{color:var(--acc);font-weight:700;font-size:calc(var(--S)/var(--G)*.72);border:0}
+.face i.e{border:0}
+.face i.ini{box-shadow:inset 0 0 0 3px #27ae60}
+.face i.fin{box-shadow:inset 0 0 0 3px #c0392b}
+.face i.h0{background:rgba(231,76,60,.45)}.face i.h1{background:rgba(41,128,185,.45)}.face i.h2{background:rgba(39,174,96,.45)}.face i.h3{background:rgba(243,156,18,.5)}.face i.h4{background:rgba(142,68,173,.45)}.face i.h5{background:rgba(22,160,133,.45)}
+.face i.h0,.face i.h1,.face i.h2,.face i.h3,.face i.h4,.face i.h5{font-weight:800;outline:2px solid var(--fg);outline-offset:-2px}
+.fr{display:grid;grid-template-columns:1fr 112px;gap:6px;margin-top:6px;align-items:center}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.face i span{display:block;transform:rotate(var(--r,0deg))}
+.face{--r:0deg}
+.ctl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0}
+button{font:inherit;font-size:14px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+button.on{background:var(--fg);color:var(--bg)}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:14px}
+h2{margin:0 0 8px;font-size:18px}
+ul{margin:0;padding-left:20px}
+textarea,input,select{width:100%;font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+.out{margin-top:8px;padding:8px;border-radius:8px;background:var(--bg);border:1px dashed var(--line);min-height:40px;word-break:break-word;font-family:Menlo,Consolas,monospace;font-size:13px}
+label{font-size:13px;color:var(--mut);display:block;margin:8px 0 4px}
+.note{font-size:12px;color:var(--mut);margin-top:10px}
+a.don{display:inline-block;padding:12px 22px;border-radius:10px;background:var(--acc);color:#fff;text-decoration:none;font-size:16px;font-weight:700}
+a.don.off{opacity:.45;pointer-events:none}
+@media print{.stage,.ctl,.tool{display:none}}
+#rec{position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 24px)}
+#rec .in{max-width:640px;margin:0 auto}
+#rec h2{font-size:24px;margin:4px 0 2px;color:var(--acc)}
+.rbox{background:var(--card);border:2px solid var(--acc);border-radius:14px;padding:14px;margin-top:12px}
+.rtxt{font-size:26px;line-height:1.3;margin:6px 0;font-family:Georgia,serif;font-weight:700}
+.rp{background:var(--card);border:2px solid #27ae60;border-radius:14px;padding:14px;margin-top:14px}
+.rp h3{margin:0 0 4px;font-size:20px;color:#27ae60}
+.rp input#rpT{font-size:18px;padding:12px}
+button.big{font-size:17px;padding:12px 18px;font-weight:700;border:0;background:#27ae60;color:#fff;width:100%;margin-top:10px}
+.paso{display:inline-block;width:22px;height:22px;border-radius:50%;background:#27ae60;color:#fff;text-align:center;font:700 13px/22px Arial,sans-serif;margin-right:6px}
+body.lock{overflow:hidden}
 </style>
 </head>
 <body>
 <header>
-  <p class="mu">Econotopía · por Víctor Hugo Ramírez Salgado</p>
-  <h1>El Cubo de la Comunicación</h1>
-  <p>Cubo de 6 caras de 26 × 26 con letras A–Z en los cuatro bordes y numeración secuencial del 1 al 4056. Cada par de letras ocupa una casilla numerada.</p>
-  <div class="card">
-    <strong>Autor en clave del cubo</strong> <span class="mu">(lados 1 a 6, separados con “L”)</span>
-    <div id="clave" class="key"></div>
-  </div>
+<h1>El Cubo de la Comunicación</h1>
+<div class="sub">Autor: <b>Víctor Hugo Ramírez Salgado</b> · 3 de octubre de 2026</div>
 </header>
-
 <main>
-<section id="recibido" class="card">
-  <h2>Mensaje recibido</h2>
-  <div id="recTxt" class="out"></div>
-  <p class="mu">Este mensaje se muestra una sola vez en este dispositivo.</p>
+<div id="rec" style="display:none" role="dialog" aria-modal="true" aria-labelledby="recTit"><div class="in">
+<div class="sub" style="text-align:center">El Cubo de la Comunicación · Econotopía</div>
+<h2 id="recTit" style="text-align:center">📩 Tienes un mensaje</h2>
+<div id="recBody"></div>
+<div id="recReply"></div>
+<button id="recClose" style="width:100%;margin-top:14px">Ver el cubo completo</button>
+</div></div>
+<section class="tool">
+<h2>Idioma / alfabeto</h2>
+<select id="idi"></select>
+<div class="ctl" style="justify-content:flex-start;margin:8px 0 0">
+<label for="ini" style="margin:0;align-self:center">Empezar en:</label>
+<select id="ini" style="width:auto"></select>
+<button id="mez">Mezclar letras</button>
+</div>
+<div id="propBox" style="display:none">
+<label for="prop">Tu propio alfabeto: escribe las letras en el orden que quieras (distintas, 2 a 40)</label>
+<input id="prop" value="ABCDEFGHIJ">
+</div>
+<div class="note" id="alfTxt"></div>
+<div class="note" id="alfNote"></div>
 </section>
 
-<section class="card">
-  <h2>1 · Tu alfabeto</h2>
-  <label>Letra de inicio del alfabeto (tu clave personal)</label>
-  <select id="inicio"></select>
-  <p class="mu">Quien reciba tu mensaje debe usar la misma letra de inicio. Acentos y ñ se convierten a su letra base (á→A, ñ→N).</p>
+<div class="stage" id="stage"><div class="cube" id="cube"></div></div>
+<div class="note" id="cap" style="text-align:center;margin:4px 0 0"></div>
+<div class="ctl" id="ctl"></div>
+<div class="note" style="text-align:center;margin-top:0">Arrastra con un dedo para girar · pellizca para acercar y mover · o usa los botones de zoom.</div>
+
+<section>
+<h2>Ficha de la idea</h2>
+<ul>
+<li>Un cubo de <b>6 caras</b>; cada cara es una cuadrícula de <b id="fN"></b> × <b id="fN2"></b> = <b id="fC"></b> celdas (<b id="fT"></b> en total).</li>
+<li>Las <b>letras del alfabeto</b> rodean cada cara por sus cuatro lados.</li>
+<li>Los números avanzan en <b>secuencia continua de 1 a <span id="fT2"></span></b>, de cara en cara.</li>
+<li>Cada número equivale a una letra (la primera letra es 1 y el ciclo se repite al pasar de <span id="fN3"></span>).</li>
+<li>Cada celda se ubica por <b>cara + letra de fila + letra de columna</b>.</li>
+</ul>
 </section>
 
-<section class="card">
-  <h2>2 · Escribe hasta 4 frases</h2>
-  <label><input type="checkbox" id="todos" style="width:auto"> Escribir la frase 1 en los 6 lados</label>
-  <div id="frases"></div>
-  <button id="cifrar">Convertir a números</button>
-  <div id="salida" class="out"></div>
-  <button class="sec" id="copiarNum">Copiar números</button>
-  <button class="sec" id="copiarLiga">Copiar liga para enviar</button>
-  <p class="mu">La liga abre el mensaje una vez por dispositivo y después se borra de la dirección.</p>
+<section id="acerca">
+<h2>Acerca de Econotopía</h2>
+<p style="margin:0 0 10px;font-size:15px"><b>Víctor Hugo Ramírez Salgado</b> es desarrollador independiente y creador de <i>Econotopía</i>, un sistema que integra comunicación, numeración, letras, diseño tecnológico y programación para que cualquier persona pueda comunicarse y aprender a su manera, a nivel global. Es autor de <i>El Cubo de la Comunicación</i> y de sistemas de automatización en Python.</p>
+<ol style="margin:0;padding-left:20px;font-size:15px">
+<li>Econotopía es un sistema creado por Víctor Hugo Ramírez Salgado que integra un modelo de comunicación, un sistema numérico, letras y alfabetos, diseño tecnológico y programación.</li>
+<li>Su herramienta central, <i>El Cubo de la Comunicación</i>, permite a cualquier persona crear su propio alfabeto o idioma, convertir mensajes entre ellos y desarrollar una forma propia de comunicarse y aprender, con alcance global.</li>
+<li>Contempla un fondo de donativos destinado directamente al cubo, para mantenerlo y mejorarlo con fines educativos, con registro visible de ingresos y salidas.</li>
+</ol>
 </section>
 
-<section class="card">
-  <h2>3 · Ver el cubo</h2>
-  <div class="escena" id="escena"><div class="cubo" id="cubo"></div></div>
-  <button class="sec" id="vista">Ver desarrollo en cruz</button>
-  <p class="mu">Gira el cubo con el dedo. Toca una cara para ver sus números abajo.</p>
-  <div class="tabs" id="tabs"></div>
-  <p class="legend"><span style="background:var(--hi)">casilla usada</span><span style="outline:2px solid var(--ok)">inicio</span><span style="outline:2px solid var(--bad)">final</span></p>
-  <p id="marcas" class="mu"></p>
-  <div class="gridwrap"><table id="grid"></table></div>
-  <p id="celdaInfo" class="mu">Toca una casilla para ver sus letras.</p>
+<section>
+<h2>Clave del autor</h2>
+<div class="note" style="margin:0 0 6px">Nombre del autor codificado en las caras 1 a 6, separadas por L.</div>
+<div class="out" id="clave"></div>
+<div class="ctl" style="justify-content:flex-start"><button id="cp">Copiar clave</button></div>
 </section>
 
-<section class="card">
-  <h2>4 · Leer un mensaje</h2>
-  <textarea id="entrada" placeholder="Pega aquí los números"></textarea>
-  <button id="descifrar">Convertir a texto</button>
-  <div id="texto" class="out"></div>
-  <label>Recibir en el idioma:</label>
-  <select id="idioma">
-    <option value="es">Español</option><option value="en">English</option><option value="fr">Français</option>
-    <option value="ru">Русский</option><option value="ar">العربية</option>
-    <option value="zh-CN">中文 simplificado (mandarín)</option><option value="zh-TW">中文 tradicional</option>
-    <option value="yue">粵語 cantonés (beta)</option><option value="pt">Português</option>
-    <option value="de">Deutsch</option><option value="it">Italiano</option>
-    <option value="lsm" disabled>Lengua de Señas Mexicana – Ensenada (beta, próximamente)</option>
-  </select>
-  <button class="sec" id="traducir">Traducir</button>
-  <p class="mu">Idiomas oficiales de la ONU, lenguas regionales y LSM en desarrollo. Los caracteres chinos y otros no latinos se cifran en modo <span class="beta">beta</span>.</p>
+<section class="tool">
+<h2>Frases en el cubo</h2>
+<label for="modo" style="margin-top:0">Modo</label>
+<select id="modo"><option value="6">6 frases: una por cara (tú eliges la cara de cada una)</option><option value="1">Una sola frase completa en una cara</option></select>
+<div class="note" style="margin:6px 0 0">Se iluminan en el cubo y abajo salen los números.</div>
+<div id="frs"></div>
+<div class="out" id="o1"></div>
+<label for="n">Números → texto (separados por espacios; "/" es espacio y "L" separa caras)</label>
+<input id="n" placeholder="3 21 2 15 / 4 5 / 3 15 13 21 14 9 3 1 3 9 15 14">
+<div class="out" id="o2"></div>
 </section>
 
-<section class="card">
-  <h2>Fondo educativo del Cubo de la Comunicación · Econotopía</h2>
-  <p>Donativos voluntarios para servidores, mejoras, sugerencias, educación, viajes, propuestas, presentaciones, impresiones, módulos y libros.</p>
-  <ul>
-    <li>Todos los donativos y salidas son visibles en todo momento.</li>
-    <li>Las salidas las solicita el administrador y requieren la aprobación de al menos 2 personas usuarias.</li>
-  </ul>
-  <p class="mu">Enlace bancario para donativos: próximamente.</p>
+<section class="tool">
+<h2>Enviar mensaje</h2>
+<div class="note" style="margin:0">Crea un enlace con las frases de arriba. Quien lo abra verá el mensaje en su pantalla principal y podrá responder ahí mismo.</div>
+<label style="display:flex;gap:8px;align-items:center;color:var(--fg);font-size:14px"><input type="checkbox" id="kc" checked style="width:auto"> Incluir la clave (alfabeto) en el enlace</label>
+<label style="display:flex;gap:8px;align-items:center;color:var(--fg);font-size:14px"><input type="checkbox" id="once" checked style="width:auto"> Que se pueda ver una sola vez (por dispositivo)</label>
+<div class="ctl" style="justify-content:flex-start"><button id="mk">Crear enlace</button></div>
+<input id="lnk" readonly placeholder="Aquí aparecerá tu enlace">
+<div class="ctl" style="justify-content:flex-start"><button id="cpl">Copiar enlace</button><button id="shl">Compartir</button></div>
+<div class="note" id="sendNote"></div>
+<label for="pg">¿Recibiste un enlace o código? Pégalo aquí</label>
+<textarea id="pg" rows="2" placeholder="Pega el enlace o el código"></textarea>
+<div class="ctl" style="justify-content:flex-start"><button id="vr">Ver mensaje</button></div>
 </section>
 
-<section class="card">
-  <h2>Acerca de Econotopía</h2>
-  <p>Econotopía es el proyecto de Víctor Hugo Ramírez Salgado que reúne el modelo de comunicación del Cubo, su dimensión numérica, las letras, el diseño tecnológico y la programación. Su propósito central es ofrecer una herramienta para trasladar idiomas o crear una forma propia de comunicarse y aprender a nivel global. El fondo educativo se destina directamente al sistema del Cubo de la Comunicación.</p>
-  <p><strong>En 3 líneas:</strong><br>
-  Un cubo de 6 caras, 26 × 26 y 4056 casillas que convierte letras en números.<br>
-  Cada persona elige su idioma y su alfabeto para comunicarse de forma propia y segura.<br>
-  Un proyecto educativo y abierto, sostenido por donativos transparentes.</p>
+<section id="dona">
+<h2>Fondo educativo del Cubo de la Comunicación · Econotopía</h2>
+<div class="note" style="margin:0 0 10px;font-size:14px">Este cubo es una herramienta para aprender y comunicar. Si te sirve, puedes hacer una donación voluntaria para apoyar la mejora y la comunicación de la educación.</div>
+<ul style="font-size:14px;margin:0 0 12px">
+<li><b>Para qué se usará:</b> servidores y mantenimiento, mejoras, sugerencias y propuestas, educación, viajes, presentaciones, impresiones, módulos, libros y otros gastos del proyecto.</li>
+<li><b>Fondo común:</b> los donativos se acumulan en una bolsa y los gastos salen de ahí.</li>
+<li><b>Transparencia:</b> cada donativo y cada salida se mostrarán en un registro visible.</li>
+<li><b>Salidas y reembolsos:</b> el administrador solicita la salida y debe ser aceptada por al menos 2 personas usuarias.</li>
+</ul>
+<a id="donBtn" class="don" href="#" target="_blank" rel="noopener">Donar</a>
+<div class="note" id="donNote"></div>
 </section>
+
+<p class="note">Este documento presenta la idea y su funcionamiento. Un registro formal (por ejemplo ante INDAUTOR o el IMPI en México) tiene requisitos propios: conviene consultarlo con un especialista y conservar fechas y versiones de este material como evidencia de autoría.</p>
 </main>
-
-<footer class="mu">© Víctor Hugo Ramírez Salgado · Econotopía · El Cubo de la Comunicación</footer>
-
 <script>
-const BASE='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const AUTOR='VICTOR HUGO RAMIREZ SALGADO';
-let inicio=0, cara=1, usadas=[];
-const $=id=>document.getElementById(id);
-const alfa=()=>BASE.slice(inicio)+BASE.slice(0,inicio);
-const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
-const celda=(f,a,b)=>(f-1)*676+a*26+b+1;
-const parte=n=>{n-=1;return{f:Math.floor(n/676)+1,r:Math.floor(n%676/26),c:n%26}};
+(function(){
+var DONA_URL="";
+var NOMBRE="Víctor Hugo Ramírez Salgado";
+var IDI={en:["English / A–Z","ABCDEFGHIJKLMNOPQRSTUVWXYZ"],es:["Español","ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"],fr:["Français","ABCDEFGHIJKLMNOPQRSTUVWXYZ"],de:["Deutsch","ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ"],it:["Italiano","ABCDEFGHILMNOPQRSTUVZ"],pt:["Português","ABCDEFGHIJKLMNOPQRSTUVWXYZ"],el:["Ελληνικά","ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"],ru:["Русский","АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"],ar:["العربية","ابتثجحخدذرزسشصضطظعغفقكلمنهوي"],zh:["中文 · Mandarín (pinyin)","ABCDEFGHIJKLMNOPQRSTUVWXYZ"],zhu:["中文 · Mandarín (zhuyin ㄅㄆㄇ)","ㄅㄆㄇㄈㄉㄊㄋㄌㄍㄎㄏㄐㄑㄒㄓㄔㄕㄖㄗㄘㄙㄧㄨㄩㄚㄛㄜㄝㄞㄟㄠㄡㄢㄣㄤㄥㄦ"],lsm:["Lengua de Señas Mexicana (letras)","ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"],yue:["粵語 · Cantonés (jyutping)","ABCDEFGHIJKLMNOPQRSTUVWXYZ"]};
+var BETA={ar:1,zh:1,zhu:1,yue:1,lsm:1};
+var NOTES={lsm:"Beta. LSM: aquí se usa la correspondencia de letras del deletreo (dactilología). Las formas de la mano y las variantes regionales, como las de Ensenada, deben validarse con la comunidad sorda local; se pueden añadir imágenes cuando las tengas.",zh:"Beta. Mandarín en pinyin: escribe sin tonos (por ejemplo, ni hao). Al recibir, el mensaje puede verse en caracteres simplificados o tradicionales.",zhu:"Beta. Mandarín en zhuyin (bopomofo): 37 símbolos. Al recibir, el mensaje puede verse en caracteres simplificados o tradicionales.",yue:"Beta. Cantonés en jyutping: escribe sin números de tono (por ejemplo, nei hou).",ar:"Beta. Árabe: se escribe de derecha a izquierda; falta probar su aspecto en el cubo en varios dispositivos."};
+var alf=IDI.en[1],N=26,faces=[],lastR=[];
+var cube=document.getElementById("cube"),stage=document.getElementById("stage");
+var S=Math.min(window.innerWidth*.72,380);
+document.documentElement.style.setProperty("--S",S+"px");
+var tf=["rotateY(0deg)","rotateY(90deg)","rotateY(180deg)","rotateY(-90deg)","rotateX(90deg)","rotateX(-90deg)"];
+function $(i){return document.getElementById(i)}
+var idi=$("idi");
+for(var k in IDI){var o=document.createElement("option");o.value=k;o.textContent=IDI[k][0]+" ("+IDI[k][1].length+")"+(BETA[k]?" · beta":"");idi.appendChild(o)}
+var op=document.createElement("option");op.value="p";op.textContent="Mi propio idioma";idi.appendChild(op);
 
-function cifrar(texto,f){
-  const A=alfa();
-  return texto.trim().split(/\s+/).filter(Boolean).map(w=>{
-    const out=[];let buf=[];
-    const vaciar=()=>{for(let i=0;i<buf.length;i+=2){const a=buf[i],b=buf[i+1];
-      out.push(b===undefined?celda(f,a,a)+'*':String(celda(f,a,b)));}buf=[];};
-    for(const ch of w){
-      const n=norm(ch);
-      if(/[0-9]/.test(ch)){vaciar();out.push('['+ch+']');}
-      else if(n&&[...n].every(c=>A.includes(c))){[...n].forEach(c=>buf.push(A.indexOf(c)));}
-      else if(/\p{L}/u.test(ch)){vaciar();let x=ch.codePointAt(0),d=[];
-        for(let k=0;k<4;k++){d.unshift(x%26);x=Math.floor(x/26);}
-        out.push('^'+celda(f,d[0],d[1])+'-'+celda(f,d[2],d[3]));}
-    }
-    vaciar();return out.join(' ');
-  }).join(' / ');
-}
+function cleanAlf(s){var a="";s=s.replace(/ß/g,"ẞ").toUpperCase();for(var ch of s){if(ch.trim()&&a.indexOf(ch)<0)a+=ch}return Array.from(a).slice(0,40).join("")}
+function norm(t){var out="";t=t.replace(/ß/g,"ẞ").toUpperCase();
+ for(var ch of t){if(alf.indexOf(ch)>=0||ch==" "){out+=ch;continue}
+  var b=ch.normalize("NFD").replace(/[\u0300-\u036f\u064B-\u065F]/g,"");
+  for(var c of b)if(alf.indexOf(c)>=0)out+=c}
+ return out}
+function pos(c){return Array.from(alf).indexOf(c)+1}
+function letra(n){return Array.from(alf)[(n-1)%N]}
 
-function descifrar(s){
-  const A=alfa();
-  return s.split('|').map(fr=>fr.trim().split(/\s*\/\s*/).map(w=>w.split(/\s+/).filter(Boolean).map(t=>{
-    let m;
-    if(m=t.match(/^\[(\d)\]$/))return m[1];
-    if(m=t.match(/^\^(\d+)-(\d+)$/)){const p=parte(+m[1]),q=parte(+m[2]);
-      return String.fromCodePoint(((p.r*26+p.c)*26+q.r)*26+q.c);}
-    if(m=t.match(/^(\d+)(\*?)$/)){const n=+m[1];if(n<1||n>4056)return '?';
-      const p=parte(n);return m[2]?A[p.r]:A[p.r]+A[p.c];}
-    return '';
-  }).join('')).join(' ')).join('\n');
-}
-
-function numeros(s){return (s.match(/\d+/g)||[]).map(Number).filter(n=>n>=1&&n<=4056);}
-
-function verClave(){
-  $('clave').textContent=[1,2,3,4,5,6].map(f=>cifrar(AUTOR,f)).join('  L  ');
-}
-
-function armarFrases(){
-  let h='';for(let i=1;i<=4;i++){
-    h+=`<div class="row"><textarea id="f${i}" placeholder="Frase ${i}"></textarea><select id="l${i}">`+
-      [1,2,3,4,5,6].map(f=>`<option value="${f}"${f===i?' selected':''}>Lado ${f}</option>`).join('')+'</select></div>';}
-  $('frases').innerHTML=h;
-}
-
-let mensaje='';
-function convertir(){
-  const partes=[],vista=[];
-  if($('todos').checked){
-    const t=$('f1').value;if(t.trim())for(let f=1;f<=6;f++){const c=cifrar(t,f);partes.push(c);vista.push('Lado '+f+': '+c);}
-  }else for(let i=1;i<=4;i++){
-    const t=$('f'+i).value,f=+$('l'+i).value;
-    if(t.trim()){const c=cifrar(t,f);partes.push(c);vista.push('Lado '+f+': '+c);}
+function build(){
+ cube.innerHTML="";faces.length=0;lastR=[];var G=N+2,A=Array.from(alf);
+ document.documentElement.style.setProperty("--G",G);
+ for(var k=0;k<6;k++){
+  var h="",n=k*N*N+1;
+  for(var r=0;r<G;r++)for(var c=0;c<G;c++){
+   var cr=(r==0||r==G-1),cc=(c==0||c==G-1);
+   if(cr&&cc)h+='<i class="e"></i>';
+   else if(cr)h+='<i class="l"><span>'+A[c-1]+'</span></i>';
+   else if(cc)h+='<i class="l"><span>'+A[r-1]+'</span></i>';
+   else{var mk=(k==0&&r==1&&c==1)?" ini":(k==5&&r==G-2&&c==G-2)?" fin":"";h+='<i'+(mk?' class="'+mk.trim()+'"':"")+'><span>'+(n++)+'</span></i>'}
   }
-  mensaje=partes.join(' | ');
-  $('salida').textContent=vista.join('\n')||'Escribe al menos una frase.';
-  marcar(mensaje);
+  var d=document.createElement("div");d.className="face";d.innerHTML=h;
+  d.style.gridTemplateColumns="repeat("+G+",1fr)";d.style.gridTemplateRows="repeat("+G+",1fr)";
+  d.style.transform=tf[k]+" translateZ("+(S/2)+"px)";cube.appendChild(d);faces.push(d);
+ }
+ $("fN").textContent=N;$("fN2").textContent=N;$("fN3").textContent=N;
+ $("fC").textContent=N*N;$("fT").textContent=(6*N*N).toLocaleString("es-MX");$("fT2").textContent=(6*N*N).toLocaleString("es-MX");
+ $("cap").innerHTML='<span class="dot" style="background:#27ae60"></span>Inicio: <b>'+A[0]+'</b> (n.º 1, Cara 1) &nbsp; <span class="dot" style="background:#c0392b"></span>Final: <b>'+A[A.length-1]+'</b> (n.º '+(6*N*N)+', Cara 6)';
+ $("alfTxt").textContent="Alfabeto ("+N+"): "+A.join(" ");
+ var parts=[];
+ for(var k2=0;k2<6;k2++){parts.push(norm(NOMBRE).split("").map(function(c){return c==" "?"/":pos(c)+k2*N*N}).join(" "))}
+ $("clave").textContent=parts.join("").replace(/[\s\/L]/g,"")?parts.join(" L "):"(El alfabeto activo no contiene las letras del nombre.)";
+ enc();dec();
 }
-
-function marcar(s){
-  usadas=numeros(s.replace(/\[\d\]/g,''));
-  if(usadas.length){const a=parte(usadas[0]),z=parte(usadas[usadas.length-1]),A=alfa();
-    $('marcas').textContent=`Inicio: casilla ${usadas[0]} (lado ${a.f}, ${A[a.r]}${A[a.c]}) · Final: casilla ${usadas[usadas.length-1]} (lado ${z.f}, ${A[z.r]}${A[z.c]})`;
-    cara=a.f;}
-  else $('marcas').textContent='';
-  tabs();grid();
+function setAlf(){
+ var v=idi.value;$("propBox").style.display=v=="p"?"block":"none";
+ var a=v=="p"?cleanAlf($("prop").value):IDI[v][1];
+ if(Array.from(a).length<2)return;
+ alf=a;N=Array.from(a).length;build();fillIni();$("alfNote").textContent=NOTES[v]||"";
 }
+function fillIni(){var e=$("ini");e.innerHTML="";Array.from(alf).forEach(function(ch,i){var o=document.createElement("option");o.value=i;o.textContent=ch;e.appendChild(o)})}
+function toCustom(arr){idi.value="p";$("prop").value=arr.join("");setAlf()}
+$("ini").onchange=function(){var a=Array.from(alf),i=+this.value;toCustom(a.slice(i).concat(a.slice(0,i)))};
+$("mez").onclick=function(){var a=Array.from(alf);for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}toCustom(a)};
+idi.onchange=setAlf;$("prop").oninput=setAlf;
 
-function tabs(){
-  $('tabs').innerHTML=[1,2,3,4,5,6].map(f=>`<button class="${f===cara?'on':''}" data-f="${f}">Lado ${f}</button>`).join('');
-  $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{cara=+b.dataset.f;tabs();grid();});
+var rx=-20,ry=-30,auto=true,drag=false,px=0,py=0,z=1,tx=0,ty=0;
+function paint(){cube.style.transform="translate("+tx+"px,"+ty+"px) scale("+z+") rotateX("+rx+"deg) rotateY("+ry+"deg)";roll();if(zl)zl.textContent=Math.round(z*100)+"%"}
+var zl=null;
+var FX=[[1,0,0],[0,0,-1],[-1,0,0],[0,0,1],[1,0,0],[1,0,0]],
+    FY=[[0,1,0],[0,1,0],[0,1,0],[0,1,0],[0,0,1],[0,0,-1]],
+    FN=[[0,0,1],[1,0,0],[0,0,-1],[-1,0,0],[0,-1,0],[0,1,0]];
+function roll(){
+ var a=rx*Math.PI/180,b=ry*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),cb=Math.cos(b),sb=Math.sin(b);
+ function pr(v){var x1=v[0]*cb+v[2]*sb,z1=-v[0]*sb+v[2]*cb;return [x1,v[1]*ca-z1*sa,v[1]*sa+z1*ca]}
+ for(var k=0;k<faces.length;k++){
+  if(pr(FN[k])[2]<=0.02)continue;
+  var ex=pr(FX[k]),ang;
+  if(Math.hypot(ex[0],ex[1])>0.2)ang=Math.atan2(ex[1],ex[0])*180/Math.PI;
+  else{var ey=pr(FY[k]);ang=Math.atan2(ey[1],ey[0])*180/Math.PI-90}
+  var r=Math.round(-ang);
+  if(lastR[k]!==r){lastR[k]=r;faces[k].style.setProperty("--r",r+"deg")}
+ }
 }
+function setZ(v){z=Math.max(.5,Math.min(8,v));if(z<=1){tx=0;ty=0}paint()}
+function loop(){if(auto&&!drag){ry+=.3;paint()}requestAnimationFrame(loop)}
+var ptr={},pd=0,pcx=0,pcy=0;
+function two(){var k=Object.keys(ptr);return [ptr[k[0]],ptr[k[1]]]}
+stage.addEventListener("pointerdown",function(e){ptr[e.pointerId]=[e.clientX,e.clientY];stage.setPointerCapture(e.pointerId);
+ var n=Object.keys(ptr).length;drag=true;px=e.clientX;py=e.clientY;
+ if(n==2){var t=two();pd=Math.hypot(t[0][0]-t[1][0],t[0][1]-t[1][1]);pcx=(t[0][0]+t[1][0])/2;pcy=(t[0][1]+t[1][1])/2}});
+stage.addEventListener("pointermove",function(e){if(!ptr[e.pointerId])return;ptr[e.pointerId]=[e.clientX,e.clientY];
+ var n=Object.keys(ptr).length;
+ if(n>=2){var t=two(),d=Math.hypot(t[0][0]-t[1][0],t[0][1]-t[1][1]),cx=(t[0][0]+t[1][0])/2,cy=(t[0][1]+t[1][1])/2;
+  if(pd>0)setZ(z*d/pd);tx+=cx-pcx;ty+=cy-pcy;pd=d;pcx=cx;pcy=cy;paint()}
+ else{ry+=(e.clientX-px)*.5;rx-=(e.clientY-py)*.5;px=e.clientX;py=e.clientY;paint()}});
+function up(e){delete ptr[e.pointerId];var n=Object.keys(ptr).length;if(n==1){var k=Object.keys(ptr)[0];px=ptr[k][0];py=ptr[k][1]}if(n==0)drag=false}
+stage.addEventListener("pointerup",up);stage.addEventListener("pointercancel",up);
+stage.addEventListener("wheel",function(e){e.preventDefault();setZ(z*(e.deltaY<0?1.15:1/1.15))},{passive:false});
+paint();loop();
+var ctl=$("ctl"),views=[[0,0],[0,-90],[0,-180],[0,-270],[-90,0],[90,0]];
+function btn(txt,fn){var b=document.createElement("button");b.textContent=txt;b.onclick=fn;ctl.appendChild(b);return b}
+for(let k=0;k<6;k++)btn("Cara "+(k+1),function(){auto=false;rx=views[k][0];ry=views[k][1];paint();sync()});
+var ab=btn("Girar solo",function(){auto=!auto;sync()});
+btn("＋ Zoom",function(){setZ(z*1.4)});
+btn("－ Zoom",function(){setZ(z/1.4)});
+btn("Restablecer",function(){z=1;tx=0;ty=0;paint()});
+zl=document.createElement("span");zl.style.cssText="align-self:center;font-size:13px;color:var(--mut);min-width:42px;text-align:center";ctl.appendChild(zl);paint();
+btn("Pantalla completa",function(){var e=document.documentElement;if(document.fullscreenElement)document.exitFullscreen();else if(e.requestFullscreen)e.requestFullscreen()});
+function sync(){ab.className=auto?"on":""}sync();
 
-function grid(){
-  const A=alfa(),set=new Set(usadas),ini=usadas[0],fin=usadas[usadas.length-1];
-  const cab='<tr><th></th>'+[...A].map(l=>`<th>${l}</th>`).join('')+'<th></th></tr>';
-  let h=cab;
-  for(let r=0;r<26;r++){
-    h+=`<tr><th>${A[r]}</th>`;
-    for(let c=0;c<26;c++){const n=celda(cara,r,c);
-      let k=set.has(n)?'u':'';if(n===ini)k+=' ini';if(n===fin)k+=' fin';
-      h+=`<td class="${k}" data-n="${n}">${n}</td>`;}
-    h+=`<th>${A[r]}</th></tr>`;
+var COL=["#e74c3c","#2980b9","#27ae60","#f39c12","#8e44ad","#16a085"],fr=[],fs=[],rows=[];
+(function(){var box=$("frs");
+ for(var i=0;i<6;i++){
+  var w=document.createElement("div");w.className="fr";
+  var t=document.createElement("input");t.placeholder="Frase "+(i+1);
+  var sel=document.createElement("select");
+  for(var k=0;k<6;k++){var o=document.createElement("option");o.value=k;o.textContent="Cara "+(k+1);sel.appendChild(o)}
+  sel.value=i;t.oninput=enc;sel.onchange=enc;
+  w.appendChild(t);w.appendChild(sel);box.appendChild(w);fr.push(t);fs.push(sel);rows.push(w)}
+ $("modo").onchange=function(){vis();enc()};vis();
+})();
+function vis(){var one=$("modo").value=="1";rows.forEach(function(w,i){w.style.display=(one&&i>0)?"none":"";fr[i].placeholder=one?"Escribe tu frase completa":"Frase "+(i+1)})}
+function enc(){
+ var C=N*N,G=N+2,lines=[];
+ faces.forEach(function(f){Array.prototype.forEach.call(f.children,function(c){c.className=c.className.replace(/ ?h\d/g,"")})});
+ for(var i=0;i<6;i++){
+  if($("modo").value=="1"&&i>0)break;
+  var t=norm(fr[i].value),k=+fs[i].value,out=[];
+  for(var ch of t){if(ch==" ")out.push("/");else{var p=pos(ch);if(p>0){out.push(p+k*C);
+   var q=p-1,cell=faces[k]&&faces[k].children[(Math.floor(q/N)+1)*G+(q%N)+1];}}}
+  if(!out.length)continue;
+  // resaltar: cada letra ocupa una celda de la cara elegida (la fila de su letra, columna de su letra)
+  var seq=[],P=Array.from(t).filter(function(c){return c!=" "&&pos(c)>0});
+  for(var j=0;j<P.length;j++){var m=pos(P[j])+k*C-1,q2=m%C;seq.push(q2)}
+  seq.forEach(function(q2){var c=faces[k]&&faces[k].children[(Math.floor(q2/N)+1)*G+(q2%N)+1];if(c)c.className+=" h"+i});
+  lines.push('<div><span class="dot" style="background:'+COL[i]+'"></span><b>Cara '+(k+1)+':</b> '+out.join(" ")+'</div>');
+ }
+ $("o1").innerHTML=lines.join("")||"";
+}
+function dec(){
+ var v=$("n").value.split(/[\s,]+/).filter(Boolean),s="",det=[];
+ v.forEach(function(x){
+  if(x=="/"){s+=" ";return}
+  if(x.toUpperCase()=="L"){s+=" | ";return}
+  var m=parseInt(x,10);if(isNaN(m)||m<1)return;
+  s+=letra(m);
+  var T=6*N*N,C=N*N;
+  if(m<=T){var i=m-1,q=i%C,A=Array.from(alf);det.push(m+": cara "+(Math.floor(i/C)+1)+", "+A[Math.floor(q/N)]+A[q%N])}
+  else det.push(m+": fuera del cubo");
+ });
+ $("o2").innerHTML=(s||"")+(det.length?'<br><small style="color:var(--mut)">'+det.join(" · ")+"</small>":"");
+}
+$("n").oninput=dec;
+$("cp").onclick=function(){var t=$("clave").textContent;try{navigator.clipboard.writeText(t);$("cp").textContent="Copiada"}catch(e){var r=document.createRange();r.selectNodeContents($("clave"));var s=getSelection();s.removeAllRanges();s.addRange(r)}setTimeout(function(){$("cp").textContent="Copiar clave"},1500)};
+(function(){var b=$("donBtn");if(DONA_URL){b.href=DONA_URL}else{b.className+=" off";$("donNote").textContent="El sistema de pagos y el registro público se están preparando; el botón se activará cuando estén listos."}})();
+fillIni();
+build();
+
+function b64e(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function b64d(t){t=t.replace(/-/g,"+").replace(/_/g,"/");while(t.length%4)t+="=";return JSON.parse(decodeURIComponent(escape(atob(t))))}
+function getMsgs(){
+ var C=N*N,res=[],one=$("modo").value=="1";
+ for(var i=0;i<6;i++){if(one&&i>0)break;
+  var t=norm(fr[i].value),k=+fs[i].value,out=[];
+  for(var ch of t){if(ch==" ")out.push("/");else{var p=pos(ch);if(p>0)out.push(p+k*C)}}
+  if(out.length)res.push({k:k+1,n:out.join(" ")});
+ }
+ return res;
+}
+function esc(x){return String(x).replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c]})}
+var TL=[["Español","Español"],["English","English"],["中文 简体 (Simplified Chinese, Mandarin)","中文 · Mandarín simplificado (简体)","pinyin"],["中文 繁體 (Traditional Chinese, Mandarin)","中文 · Mandarín tradicional (繁體)","pinyin"],["粵語 廣東話 (Cantonese, written in traditional characters as spoken in Hong Kong)","粵語 · Cantonés (廣東話) · beta","jyutping"],["العربية (Arabic)","العربية · Árabe"],["Русский (Russian)","Русский · Ruso"],["Français","Français"],["Português","Português"],["Deutsch","Deutsch"],["Italiano","Italiano"],["Náhuatl","Náhuatl · beta"],["Maya yucateco","Maya yucateco · beta"],["Mixteco","Mixteco · beta"],["Zapoteco","Zapoteco · beta"],["LSM","Lengua de Señas Mexicana: deletreo · beta"]];
+function showMsg(d){
+ var A=d.a?Array.from(d.a):null,h="",texts=[];
+ (d.m||[]).forEach(function(m,i){
+  var txt="";
+  if(A)m.n.split(" ").forEach(function(x){if(x=="/")txt+=" ";else{var v=parseInt(x,10);if(v>0)txt+=A[(v-1)%A.length]}});
+  texts.push(txt);
+  h+='<div class="rbox"><b style="font-family:Arial,sans-serif;font-size:13px;color:var(--mut)">Cara '+m.k+'</b>'+(A?'<div class="rtxt" dir="auto">'+esc(txt)+'</div>':'')+'<details><summary style="font-size:13px;color:var(--mut);cursor:pointer">Ver en números del cubo</summary><div class="out">'+esc(m.n)+'</div></details></div>';
+ });
+ if(!A)h+='<div class="note">El remitente no incluyó la clave. Ponla en "Idioma / alfabeto" y usa "Números → texto" para leerlo.</div>';
+ else{
+  h+='<div style="border-top:1px dashed var(--line);padding-top:10px"><label for="trLang" style="margin-top:0">Quiero recibir el mensaje en:</label><select id="trLang">'+TL.map(function(t,i){return '<option value="'+i+'">'+esc(t[1])+'</option>'}).join("")+'</select><div class="ctl" style="justify-content:flex-start"><button id="trBtn">Traducir</button></div><div id="trOut"></div></div>';
+ }
+ $("recBody").innerHTML=h||"Mensaje vacío.";openRec();
+ if(A)wireTr(d,A,texts);
+ buildReply(d);
+}
+function openRec(){$("rec").style.display="block";document.body.className="lock";try{$("rec").scrollTop=0}catch(e){}}
+function closeRec(){$("rec").style.display="none";document.body.className="";$("recReply").innerHTML="";
+ try{if(location.hash)history.replaceState(null,"",location.pathname+location.search)}catch(e){}}
+$("recClose").onclick=closeRec;
+function encWith(A,txt,k){
+ var C=A.length*A.length,out=[];txt=txt.replace(/ß/g,"ẞ").toUpperCase();
+ for(var ch of txt){
+  if(/\s/.test(ch)){if(out.length&&out[out.length-1]!="/")out.push("/");continue}
+  var i=A.indexOf(ch);
+  if(i>=0){out.push(i+1+(k-1)*C);continue}
+  var b=ch.normalize("NFD").replace(/[̀-ًͯ-ٟ]/g,"");
+  for(var c of b){var j=A.indexOf(c);if(j>=0)out.push(j+1+(k-1)*C)}
+ }
+ while(out.length&&out[out.length-1]=="/")out.pop();
+ return out.join(" ");
+}
+function buildReply(d){
+ var A=d.a?Array.from(d.a):Array.from(alf),opts="";
+ for(var k=1;k<=6;k++)opts+='<option value="'+k+'">Cara '+k+'</option>';
+ $("recReply").innerHTML='<div class="rp"><h3>↩️ Responder aquí mismo</h3>'+
+ '<div class="note" style="margin:0 0 8px;font-size:14px"><span class="paso">1</span>Escribe tu respuesta &nbsp;<span class="paso">2</span>Toca “Enviar respuesta” &nbsp;<span class="paso">3</span>Elige a quién mandarla</div>'+
+ '<label for="rpT" style="margin-top:0">Línea 1</label><input id="rpT" placeholder="Escribe tu respuesta" autocomplete="off">'+
+ '<div class="fr" style="grid-template-columns:auto 1fr"><span class="note" style="margin:0">Se escribe en:</span><select id="rpK">'+opts+'</select></div>'+
+ '<div class="out" id="rpN" style="min-height:0"></div>'+
+ '<button class="big" id="rpGo">Enviar respuesta</button>'+
+ '<div id="rpRes" style="display:none;margin-top:10px"><input id="rpL" readonly><div class="ctl" style="justify-content:flex-start"><button id="rpCp">Copiar enlace</button><button id="rpSh">Compartir</button></div></div>'+
+ '<div class="note" id="rpNote"></div></div>';
+ function cur(){return encWith(A,$("rpT").value,+$("rpK").value)}
+ $("rpT").oninput=$("rpK").onchange=function(){var n=cur();$("rpN").textContent=n?"En números: "+n:""};
+ $("rpGo").onclick=function(){
+  var n=cur();
+  if(!n){$("rpNote").textContent="Escribe primero tu respuesta en la línea 1.";$("rpT").focus();return}
+  var o={m:[{k:+$("rpK").value,n:n}],a:A.join(""),l:d.l||"",r:1,o:1,id:Math.random().toString(36).slice(2,10)+Date.now().toString(36)};
+  var url=(location.href||"").split("#")[0]+"#m="+b64e(o);
+  $("rpL").value=url;$("rpRes").style.display="block";
+  if(navigator.share){navigator.share({title:"Respuesta · El Cubo de la Comunicación",text:"Te respondo con el Cubo de la Comunicación:",url:url}).then(function(){$("rpNote").textContent="Respuesta enviada."}).catch(function(){$("rpNote").textContent="Listo. Copia el enlace y mándalo por el medio que quieras."})}
+  else{copyTxt(url,$("rpCp"));$("rpNote").textContent="Enlace copiado. Pégalo en tu chat para enviarlo."}
+ };
+ $("rpCp").onclick=function(){copyTxt($("rpL").value,$("rpCp"))};
+ $("rpSh").onclick=function(){var v=$("rpL").value;if(navigator.share)navigator.share({title:"Respuesta · El Cubo de la Comunicación",url:v}).catch(function(){});else copyTxt(v,$("rpCp"))};
+}
+function copyTxt(v,b){
+ function fb(){var t=document.createElement("textarea");t.value=v;document.body.appendChild(t);t.select();try{document.execCommand("copy")}catch(e){}t.remove()}
+ try{navigator.clipboard.writeText(v).then(function(){},fb)}catch(e){fb()}
+ if(b){var o=b.textContent;b.textContent="Copiado";setTimeout(function(){b.textContent=o},1500)}
+}
+function wireTr(d,A,texts){
+ var out=$("trOut");
+ $("trBtn").onclick=async function(){
+  var t=TL[+$("trLang").value],btn=$("trBtn");
+  if(t[0]=="LSM"){
+   out.innerHTML=(d.m||[]).map(function(m,i){var w=texts[i].split(" ").map(function(p){return Array.from(p).join(" · ")}).join("  /  ");return '<div class="out" style="margin-top:6px"><b>Cara '+m.k+':</b> '+esc(w)+'</div>'}).join("")+'<div class="note">Deletreo por letras. Las formas de la mano deben validarse con la comunidad sorda local.</div>';
+   return;
   }
-  $('grid').innerHTML=h+cab;
-  dibujarCubo();
+  var sample=null;
+  try{if(window.claude&&window.claude.use)sample=await window.claude.use("sample")}catch(e){}
+  if(!sample){out.innerHTML='<div class="note">La traducción no está disponible en esta vista.</div>';return}
+  btn.disabled=true;out.innerHTML='<div class="note">Traduciendo…</div>';
+  var prompt="Traduce cada texto al idioma: "+t[0]+".\nIdioma de origen probable: "+(d.l||"desconocido")+". Los textos pueden venir en mayúsculas y sin acentos ni signos; restaura la ortografía natural. Si no conoces bien el idioma destino, haz tu mejor esfuerzo y no inventes palabras con falsa seguridad.\n"+(t[2]?"Para cada texto incluye también su romanización en "+t[2]+" en el arreglo \"r\" (mismo orden). ":"")+"Responde SOLO con JSON de la forma {\"t\":[...]"+(t[2]?",\"r\":[...]":"")+"} con una traducción por texto, en el mismo orden.\nTextos: "+JSON.stringify(texts);
+  try{
+   var r=await sample.json(prompt,{modelTier:"quick"}),arr=(r&&r.t)||[],rom=(r&&r.r)||[];
+   out.innerHTML=(d.m||[]).map(function(m,i){return '<div class="out" dir="auto" style="margin-top:6px;font-family:Georgia,serif;font-size:18px"><b style="font-family:Arial,sans-serif;font-size:13px">Cara '+m.k+':</b> '+esc(arr[i]||"")+(t[2]&&rom[i]?'<div style="font-family:Arial,sans-serif;font-size:13px;color:var(--mut)">'+esc(rom[i])+'</div>':"")+'</div>'}).join("")+(t[1].indexOf("beta")>=0?'<div class="note">Opción en beta: tiene pocos recursos de traducción automática. Conviene validarla con hablantes.</div>':'');
+  }catch(e){
+   var c=e&&e.code;out.innerHTML='<div class="note">'+(c=="not_granted"?"Necesitas permitir el uso de Claude para traducir.":c=="rate_limited"?"Demasiadas solicitudes. Espera un momento.":"No se pudo traducir. Inténtalo de nuevo.")+'</div>';
+  }finally{btn.disabled=false}
+ };
 }
-
-function dibujarCubo(){
-  const cubo=$('cubo');if(!cubo)return;
-  if(!cubo.children.length)for(let f=1;f<=6;f++){const d=document.createElement('div');
-    d.className='cara c'+f;d.dataset.f=f;d.innerHTML='<canvas width="440" height="440"></canvas>';cubo.appendChild(d);}
-  const A=alfa(),set=new Set(usadas),ini=usadas[0],fin=usadas[usadas.length-1];
-  const st=getComputedStyle(document.documentElement),v=k=>st.getPropertyValue(k).trim();
-  for(let f=1;f<=6;f++){
-    const cv=cubo.querySelector('.c'+f+' canvas'),x=cv.getContext('2d'),S=440,c=S/28;
-    x.fillStyle=v('--card');x.fillRect(0,0,S,S);
-    x.fillStyle=v('--tx');x.font='bold '+(c*0.75)+'px -apple-system,sans-serif';x.textAlign='center';x.textBaseline='middle';
-    for(let i=0;i<26;i++){const p=c*(i+1.5);
-      x.fillText(A[i],p,c/2);x.fillText(A[i],p,S-c/2);x.fillText(A[i],c/2,p);x.fillText(A[i],S-c/2,p);}
-    for(let r=0;r<26;r++)for(let k=0;k<26;k++){const n=celda(f,r,k),px=c*(k+1),py=c*(r+1);
-      if(set.has(n)){x.fillStyle=n===ini?v('--ok'):n===fin?v('--bad'):'#f2b705';x.fillRect(px,py,c,c);}}
-    x.strokeStyle=v('--ln');x.lineWidth=1;x.beginPath();
-    for(let i=0;i<=26;i++){x.moveTo(c,c*(i+1));x.lineTo(S-c,c*(i+1));x.moveTo(c*(i+1),c);x.lineTo(c*(i+1),S-c);}
-    x.stroke();
-    x.globalAlpha=f===cara?.35:.18;x.fillStyle=v('--ac');x.font='bold 150px -apple-system,sans-serif';x.fillText(f,S/2,S/2+8);
-    x.globalAlpha=1;
-  }
+function openMsg(raw,fromLink){
+ var m=raw.match(/m=([A-Za-z0-9_\-]+)/),code=m?m[1]:raw.trim(),d;
+ try{d=b64d(code)}catch(e){$("recBody").innerHTML='<div class="rbox">No pude leer ese enlace o código.</div>';$("recReply").innerHTML="";openRec();return}
+ if(d.o&&d.id){
+  var key="cubo_seen_"+d.id,seen=false,ok=true;
+  try{seen=localStorage.getItem(key)=="1"}catch(e){ok=false}
+  if(seen){$("recBody").innerHTML='<div class="rbox">Este mensaje ya fue abierto en este dispositivo y no se puede ver otra vez.</div>';buildReply(d);openRec();return}
+  showMsg(d);
+  try{localStorage.setItem(key,"1")}catch(e){}
+  if(!ok)$("recBody").innerHTML+='<div class="note">Este navegador no permite marcar el mensaje como visto.</div>';
+ }else showMsg(d);
 }
-
-let rx=-22,ry=35,arrastre=null,auto=true;
-function girar(){const cubo=$('cubo');if(cubo)cubo.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;}
-function animar(){if(auto&&!arrastre&&!$('escena').classList.contains('cruz')){ry+=0.25;girar();}requestAnimationFrame(animar);}
-function elegirCara(f){cara=f;tabs();grid();$('grid').scrollIntoView({behavior:'smooth',block:'nearest'});}
-$('escena').addEventListener('pointerdown',e=>{arrastre={x:e.clientX,y:e.clientY,rx,ry,mov:false};auto=false;});
-window.addEventListener('pointermove',e=>{if(!arrastre||$('escena').classList.contains('cruz'))return;
-  const dx=e.clientX-arrastre.x,dy=e.clientY-arrastre.y;if(Math.abs(dx)+Math.abs(dy)>6)arrastre.mov=true;
-  ry=arrastre.ry+dx*0.5;rx=Math.max(-89,Math.min(89,arrastre.rx-dy*0.5));girar();});
-window.addEventListener('pointerup',e=>{if(!arrastre)return;const mov=arrastre.mov;arrastre=null;
-  if(!mov){const el=document.elementFromPoint(e.clientX,e.clientY),cd=el&&el.closest('.cara');if(cd)elegirCara(+cd.dataset.f);}});
-$('vista').onclick=()=>{const es=$('escena').classList.toggle('cruz');
-  $('vista').textContent=es?'Ver cubo en 3D':'Ver desarrollo en cruz';if(!es)girar();};
-
-function copiar(t){
-  if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>alert('Copiado'),()=>prompt('Copia:',t));
-  else prompt('Copia:',t);
-}
-
-function liga(){
-  if(!mensaje){alert('Primero convierte tus frases.');return;}
-  const datos=btoa(JSON.stringify({s:inicio,m:mensaje,id:Date.now().toString(36)})).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-  copiar(location.origin+location.pathname+'#m='+datos);
-}
-
-function recibir(){
-  const m=location.hash.match(/^#m=(.+)$/);if(!m)return;
-  history.replaceState(null,'',location.pathname);
-  $('recibido').style.display='block';
-  let d;try{d=JSON.parse(atob(m[1].replace(/-/g,'+').replace(/_/g,'/')));}catch(e){$('recTxt').textContent='Liga no válida.';return;}
-  const llave='visto_'+d.id;let visto=false;
-  try{visto=localStorage.getItem(llave)==='1';localStorage.setItem(llave,'1');}catch(e){}
-  if(visto){$('recTxt').textContent='Este mensaje ya fue visto en este dispositivo.';return;}
-  inicio=d.s|0;$('inicio').value=inicio;verClave();
-  $('recTxt').textContent=descifrar(d.m);
-  $('entrada').value=d.m;marcar(d.m);
-}
-
-$('inicio').innerHTML=[...BASE].map((l,i)=>`<option value="${i}">${l}</option>`).join('');
-$('inicio').onchange=e=>{inicio=+e.target.value;verClave();grid();};
-$('cifrar').onclick=convertir;
-$('copiarNum').onclick=()=>mensaje?copiar(mensaje):alert('Primero convierte tus frases.');
-$('copiarLiga').onclick=liga;
-$('descifrar').onclick=()=>{const s=$('entrada').value;$('texto').textContent=descifrar(s);marcar(s);};
-$('traducir').onclick=()=>{const t=$('texto').textContent.trim();if(!t){alert('Primero convierte los números a texto.');return;}
-  window.open('https://translate.google.com/?sl=auto&tl='+$('idioma').value+'&text='+encodeURIComponent(t)+'&op=translate','_blank');};
-$('grid').onclick=e=>{const n=+e.target.dataset.n;if(!n)return;const p=parte(n),A=alfa();
-  $('celdaInfo').textContent=`Casilla ${n} · lado ${p.f} · fila ${A[p.r]} · columna ${A[p.c]} → “${A[p.r]}${A[p.c]}”`;};
-
-armarFrases();verClave();tabs();grid();recibir();girar();animar();
+$("mk").onclick=function(){
+ var ms=getMsgs();
+ if(!ms.length){$("sendNote").textContent="Escribe al menos una frase arriba.";return}
+ var o={m:ms,l:(IDI[idi.value]?IDI[idi.value][0]:"alfabeto propio")};if($("kc").checked)o.a=alf;
+ if($("once").checked){o.o=1;o.id=Math.random().toString(36).slice(2,10)+Date.now().toString(36)}
+ var code=b64e(o),base=(location.href||"").split("#")[0];
+ $("lnk").value=base+"#m="+code;
+ $("sendNote").textContent="Listo. Si el enlace no abre el mensaje, pega este código en 'Pega el enlace o el código': "+code.slice(0,24)+"…";
+ $("lnk").dataset.code=code;
+};
+$("cpl").onclick=function(){
+ var v=$("lnk").value;if(!v)return;
+ function fb(){$("lnk").focus();$("lnk").select();try{document.execCommand("copy")}catch(e){}}
+ try{navigator.clipboard.writeText(v).then(function(){},fb)}catch(e){fb()}
+ $("cpl").textContent="Copiado";setTimeout(function(){$("cpl").textContent="Copiar enlace"},1500)};
+$("shl").onclick=function(){var v=$("lnk").value;if(!v)return;
+ if(navigator.share){navigator.share({title:"El Cubo de la Comunicación",url:v}).catch(function(){})}
+ else{$("lnk").focus();$("lnk").select()}};
+$("vr").onclick=function(){var v=$("pg").value;if(v.trim())openMsg(v)};
+if(location.hash.indexOf("#m=")==0)openMsg(location.hash);
+})();
 </script>
 </body>
 </html>
