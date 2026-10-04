@@ -1,4 +1,4 @@
-mporal con Claude para hacer cambios al repo.
+temporal con Claude para hacer cambios al repo.
 # Solo responde al dueño del repo cuando escribe @claude en un issue o comentario.
 # PARA QUITAR EL ACCESO: borra este archivo, borra el secreto
 # CLAUDE_CODE_OAUTH_TOKEN (Settings > Secrets and variables > Actions)
