@@ -57,6 +57,13 @@ a.don.off{opacity:.45;pointer-events:none}
 @media print{.stage,.ctl,.tool{display:none}}
 #printArea{display:none}
 @media print{body.printing>*:not(#printArea){display:none!important}body.printing #printArea{display:block!important;color:#000;background:#fff;font-family:Menlo,Consolas,"Courier New",monospace}}
+body.vista>*:not(#printArea){display:none!important}
+body.vista #printArea{display:block;background:#fff;color:#000;padding:16px;min-height:100vh;font-family:Menlo,Consolas,"Courier New",monospace}
+#printArea .pbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;font:14px Arial,sans-serif}
+#printArea .pbar button{font:600 15px Arial,sans-serif;padding:10px 16px;border-radius:8px;border:1px solid #c0392b;background:#c0392b;color:#fff}
+#printArea .pbar button.sec{background:#fff;color:#c0392b}
+#printArea .pbar p{flex-basis:100%;margin:4px 0 0;color:#555;font-size:13px}
+@media print{#printArea .pbar{display:none!important}}
 #printArea h1{font:700 1.4em Georgia,serif;margin:0 0 .2em}
 #printArea .pm{font:.8em Georgia,serif;color:#444;margin:0 0 1em}
 #printArea h2{font:700 1em Georgia,serif;margin:1.2em 0 .4em;border-bottom:1px solid #999;padding-bottom:.2em}
@@ -202,7 +209,7 @@ body.lock{overflow:hidden}
 </div>
 <div class="out" id="ipPrev" style="white-space:pre-wrap"></div>
 <div class="note" id="ipNote"></div>
-<div class="ctl" style="justify-content:flex-start"><button id="ipGo">Imprimir</button></div>
+<div class="ctl" style="justify-content:flex-start"><button id="ipGo">Imprimir</button><button id="ipVer">Ver hoja</button></div>
 </section>
 
 <section class="tool">
@@ -602,16 +609,22 @@ if(location.hash.indexOf("#m=")==0||location.hash.indexOf("#e=")==0)openMsg(loca
  fr.forEach(function(f){f.addEventListener("input",prev)});fs.forEach(function(f){f.addEventListener("change",prev)});
  $("modo").addEventListener("change",prev);
  $("ipH").onchange=function(){$("ipPers").style.display=this.value=="p"?"grid":"none"};
- function limpiar(){document.body.classList.remove("printing");$("printArea").innerHTML="";var st=$("pageStyle");if(st)st.remove()}
- window.addEventListener("afterprint",limpiar);
- $("ipGo").onclick=function(){
+ var tLimpiar=null;
+ function limpiar(){clearTimeout(tLimpiar);document.body.classList.remove("printing","vista");$("printArea").innerHTML="";var st=$("pageStyle");if(st)st.remove()}
+ window.addEventListener("pagehide",limpiar);
+ function armarHoja(){
   var r=armar(),hj=hoja();
-  if(!r.ms.length){$("ipNote").textContent="Escribe al menos una frase en «Frases en el cubo».";return}
-  if(!($("ipN").checked||$("ipC").checked||$("ipT").checked)){$("ipNote").textContent="Elige qué imprimir.";return}
-  if(!hj){$("ipNote").textContent="Revisa el ancho y alto de la hoja (mínimo 5 cm).";return}
+  if(!r.ms.length){$("ipNote").textContent="Escribe al menos una frase en «Frases en el cubo».";return false}
+  if(!($("ipN").checked||$("ipC").checked||$("ipT").checked)){$("ipNote").textContent="Elige qué imprimir.";return false}
+  if(!hj){$("ipNote").textContent="Revisa el ancho y alto de la hoja (mínimo 5 cm).";return false}
+  limpiar();
   var pa=$("printArea"),fecha=new Date().toLocaleDateString("es-MX",{year:"numeric",month:"long",day:"numeric"}),f=firma();
-  pa.innerHTML="";pa.style.fontSize=$("ipL").value+"pt";
-  function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;pa.appendChild(e);return e}
+  pa.style.fontSize=$("ipL").value+"pt";
+  function el(tag,cls,txt,padre){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;(padre||pa).appendChild(e);return e}
+  var bar=el("div","pbar");
+  var bI=el("button","","Imprimir",bar);bI.type="button";bI.onclick=imprimir;
+  var bV=el("button","sec","Volver",bar);bV.type="button";bV.onclick=function(){limpiar();$("imp").scrollIntoView()};
+  el("p","","Si no aparece la hoja de impresión: toca Compartir (□↑) en Safari y elige «Imprimir». Si estás dentro de WhatsApp u otra app, ábrela primero en Safari.",bar);
   el("h1","",$("ipTit").value.trim()||"El Cubo de la Comunicación");
   el("p","pm","Firma: inicio "+(f.i||"—")+" · final "+(f.f||"—")+" · alfabeto de "+N+" letras ("+Array.from(alf)[0]+"…"+Array.from(alf)[N-1]+") · "+fecha);
   if($("ipN").checked){el("h2","","Código normal");el("div","pc",r.n)}
@@ -620,9 +633,20 @@ if(location.hash.indexOf("#m=")==0||location.hash.indexOf("#e=")==0)openMsg(loca
   el("div","pf","El Cubo de la Comunicación · Econotopía — Víctor Hugo Ramírez Salgado");
   var st=document.createElement("style");st.id="pageStyle";st.textContent="@page{size:"+hj.w+"cm "+hj.a+"cm;margin:"+$("ipM").value+"cm}";document.head.appendChild(st);
   document.body.classList.add("printing");
-  $("ipNote").textContent="En iPhone, elige la impresora o «Guardar en Archivos» (PDF) en la hoja que aparece. Si la impresora usa otra hoja, elígela ahí también.";
-  setTimeout(function(){window.print();setTimeout(limpiar,1500)},50);
+  tLimpiar=setTimeout(limpiar,10*60*1000);   // la hoja se borra sola a los 10 minutos
+  return true;
+ }
+ function imprimir(){
+  if(typeof window.print!="function"){mostrar();return}
+  try{window.print()}catch(e){mostrar()}
+ }
+ function mostrar(){document.body.classList.add("vista");window.scrollTo(0,0)}
+ $("ipGo").onclick=function(){
+  if(!armarHoja())return;
+  $("ipNote").textContent="Si no se abrió la hoja de impresión, toca «Ver hoja» y usa Compartir → Imprimir de Safari.";
+  imprimir();   // directo en el toque: iPhone solo permite imprimir así
  };
+ $("ipVer").onclick=function(){if(armarHoja())mostrar()};
  prev();
 })();
 /* ---- Clave rápida &• ---- */
