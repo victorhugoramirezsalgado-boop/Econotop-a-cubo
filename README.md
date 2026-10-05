@@ -21,7 +21,10 @@ https://victorhugoramirezsalgado-boop.github.io/Econotop-a-cubo/
 ## Imprimir código
 
 - Imprime las frases en código normal (números), código corto (cara en número romano, letras en pares fila-columna y total X de verificación) y, si se elige, el texto legible.
-- Firma de inicio y final dentro del código (por defecto `[3] … [3]`); el lector «Números → texto» la reconoce al consultar.
+- Cada código se imprime como el hexágono del cubo trazado con sus propios números (hasta 3/4 del ancho y alto de la hoja); si hay más números siguen en caracol hacia adentro. Al centro va siempre un sello de 1 pulgada: cubo transparente con sombras donde se ven las 6 caras (I–VI).
+- En la hoja todo va en código del cubo excepto el título: firma (números escritos en letra), fecha escrita, encabezados y «Econotopía». Detrás de cada código, marca de agua al 7 % en letra normal («código normal», «código corto»).
+- Sin encabezados ni pies del navegador (la liga y la fecha no se imprimen).
+- Fondo de cada hoja: lluvia tipo Matrix al 5 % a hoja completa con el código binario de «El Cubo de la Comunicación · Econotopía» y, en el borde derecho de arriba abajo, «el cubo de la comunicación» en números del cubo.
 - Hojas: Carta, Oficio México, Legal, A4, A5, Postal (10 × 15 cm), Tabloide o medida personalizada; vertical u horizontal; letra de 9 a 32 pt; las hojas se agregan solas.
 - Lo impreso se borra de la página en cuanto termina la impresión.
 
