@@ -18,6 +18,13 @@ https://victorhugoramirezsalgado-boop.github.io/Econotop-a-cubo/
 - Lee mensajes en números y los traduce al idioma elegido: idiomas oficiales de la ONU, mandarín (simplificado y tradicional) y cantonés.
 - En beta: Lengua de Señas Mexicana (variante de Ensenada, B.C.) y lenguas regionales.
 
+## Imprimir código
+
+- Imprime las frases en código normal (números), código corto (cara en número romano, letras en pares fila-columna y total X de verificación) y, si se elige, el texto legible.
+- Firma de inicio y final dentro del código (por defecto `[3] … [3]`); el lector «Números → texto» la reconoce al consultar.
+- Hojas: Carta, Oficio México, Legal, A4, A5, Postal (10 × 15 cm), Tabloide o medida personalizada; vertical u horizontal; letra de 9 a 32 pt; las hojas se agregan solas.
+- Lo impreso se borra de la página en cuanto termina la impresión.
+
 ## Clave rápida &•
 
 Formato: `&•L1nosvemosL3enlaescuela` → `&•` inicia; `L` + número de cara (1–6) antes de cada frase.
