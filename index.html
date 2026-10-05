@@ -2,6 +2,8 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>El Cubo de la Comunicación</title>
 <style>
@@ -38,6 +40,16 @@ h2{margin:0 0 8px;font-size:18px}
 ul{margin:0;padding-left:20px}
 textarea,input,select{width:100%;font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
 .out{margin-top:8px;padding:8px;border-radius:8px;background:var(--bg);border:1px dashed var(--line);min-height:40px;word-break:break-word;font-family:Menlo,Consolas,monospace;font-size:13px}
+.wm{position:relative;--wm:.1}
+.wm textarea,.wm .mir{display:block;margin:0;width:100%;box-sizing:border-box;font:18px/1.5 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.5px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+.wm textarea{min-height:104px;resize:vertical;color:transparent;-webkit-text-fill-color:transparent;caret-color:var(--acc);background:var(--bg)}
+.wm textarea::placeholder{color:var(--mut);-webkit-text-fill-color:var(--mut);opacity:.7}
+.wm .mir{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;border-color:transparent;background:transparent;color:var(--fg)}
+.wm .mir span{opacity:var(--wm)}
+.wm .mir span.nw{animation:wmfd 1.6s ease forwards}
+@keyframes wmfd{from{opacity:1}to{opacity:var(--wm)}}
+.qres{display:none;margin-top:10px;padding:10px 12px;border:1px solid var(--acc);border-radius:10px}
+.qres a.don{font-size:15px;padding:10px 16px;margin:4px 6px 4px 0}
 label{font-size:13px;color:var(--mut);display:block;margin:8px 0 4px}
 .note{font-size:12px;color:var(--mut);margin-top:10px}
 a.don{display:inline-block;padding:12px 22px;border-radius:10px;background:var(--acc);color:#fff;text-decoration:none;font-size:16px;font-weight:700}
@@ -118,6 +130,22 @@ body.lock{overflow:hidden}
 <div class="ctl" style="justify-content:flex-start"><button id="cp">Copiar clave</button></div>
 </section>
 
+<section class="tool" id="rapida">
+<h2>Clave rápida &amp;•</h2>
+<div class="note" style="margin:0 0 6px">Escribe o pega tu mensaje con la clave: empieza con <b>&amp;•</b> y usa <b>L</b> + número de cara (1 a 6) antes de cada frase. Ejemplo: <code>&amp;•L1nosvemosL3enlaescuela</code></div>
+<div class="wm" id="qWm"><textarea id="q" rows="3" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="&amp;•L1nosvemosL3enlaescuela"></textarea><div class="mir" id="qMir" aria-hidden="true"></div></div>
+<label for="op">Marca de agua: lo escrito se desvanece hasta <b id="opV">10%</b></label>
+<input id="op" type="range" min="0" max="100" step="5" value="10" style="padding:0">
+<label for="qpw">Contraseña (obligatoria, mínimo 6; mándala por otro medio)</label>
+<input id="qpw" type="password" autocomplete="off" placeholder="Contraseña">
+<div class="ctl" style="justify-content:flex-start"><button id="qPaste">Pegar</button><button id="qGo">Crear y copiar enlace</button></div>
+<div class="note" id="qNote"></div>
+<div class="qres" id="qRes">
+<div class="note" style="margin:0 0 6px">Enlace cifrado listo. Elige por dónde mandarlo; se borra de esta pantalla al usarlo o en 2 minutos.</div>
+<a class="don" id="qWa" href="#">WhatsApp</a><a class="don" id="qSms" href="#">SMS</a><a class="don" id="qSh" href="#">Otra app</a>
+</div>
+</section>
+
 <section class="tool">
 <h2>Frases en el cubo</h2>
 <label for="modo" style="margin-top:0">Modo</label>
@@ -135,6 +163,9 @@ body.lock{overflow:hidden}
 <div class="note" style="margin:0">Crea un enlace con las frases de arriba. Quien lo abra verá el mensaje en su pantalla principal y podrá responder ahí mismo.</div>
 <label style="display:flex;gap:8px;align-items:center;color:var(--fg);font-size:14px"><input type="checkbox" id="kc" checked style="width:auto"> Incluir la clave (alfabeto) en el enlace</label>
 <label style="display:flex;gap:8px;align-items:center;color:var(--fg);font-size:14px"><input type="checkbox" id="once" checked style="width:auto"> Que se pueda ver una sola vez (por dispositivo)</label>
+<label for="pw">Contraseña del mensaje (recomendada)</label>
+<input id="pw" type="password" autocomplete="off" placeholder="Mínimo 6 caracteres; compártela por otro medio">
+<div class="note" style="margin-top:4px">Con contraseña, el mensaje viaja cifrado (AES-256). Sin ella, cualquiera que tenga el enlace puede leerlo. Manda la contraseña por un medio distinto al enlace.</div>
 <div class="ctl" style="justify-content:flex-start"><button id="mk">Crear enlace</button></div>
 <input id="lnk" readonly placeholder="Aquí aparecerá tu enlace">
 <div class="ctl" style="justify-content:flex-start"><button id="cpl">Copiar enlace</button><button id="shl">Compartir</button></div>
@@ -142,6 +173,20 @@ body.lock{overflow:hidden}
 <label for="pg">¿Recibiste un enlace o código? Pégalo aquí</label>
 <textarea id="pg" rows="2" placeholder="Pega el enlace o el código"></textarea>
 <div class="ctl" style="justify-content:flex-start"><button id="vr">Ver mensaje</button></div>
+</section>
+
+<section id="priv">
+<h2>Privacidad</h2>
+<ul style="font-size:14px;margin:0">
+<li><b>Sin servidor ni base de datos:</b> la página no guarda, no registra y no envía tus mensajes a ningún lado. Todo se calcula en tu dispositivo.</li>
+<li><b>El mensaje vive solo en el enlace:</b> va después del signo <code>#</code>, una parte que el navegador nunca manda al servidor de la página.</li>
+<li><b>Cifrado con contraseña:</b> AES-256 con la contraseña que tú eliges; sin ella nadie puede leer el mensaje, ni el autor de la página.</li>
+<li><b>Sin rastreo:</b> no hay cookies, analíticas, publicidad ni conexiones externas (bloqueadas por la propia página).</li>
+<li><b>Una sola vez:</b> el dispositivo solo anota un número al azar para saber que ya se abrió; nunca el contenido. No impide que alguien haga captura de pantalla.</li>
+<li><b>Clave rápida &amp;•:</b> al crear el enlace, la página borra el texto, la contraseña y reemplaza el portapapeles por el enlace cifrado. El enlace también se borra de la pantalla al enviarlo.</li>
+<li><b>Al salir, se borra:</b> si el mensaje es de una sola vez y sales de la página, desaparece de la pantalla y ya no se puede volver a abrir.</li>
+<li><b>Traducción:</b> es la única función que envía texto fuera, solo si tú la pides y la aceptas.</li>
+</ul>
 </section>
 
 <section id="dona">
@@ -153,6 +198,12 @@ body.lock{overflow:hidden}
 <li><b>Transparencia:</b> cada donativo y cada salida se mostrarán en un registro visible.</li>
 <li><b>Salidas y reembolsos:</b> el administrador solicita la salida y debe ser aceptada por al menos 2 personas usuarias.</li>
 </ul>
+<div id="donCta" style="display:none;margin:0 0 12px;padding:12px 14px;border:1px solid var(--acc);border-radius:10px;font-size:15px;line-height:1.6">
+<div><b>Banco:</b> <span id="donBanco"></span></div>
+<div><b>Titular:</b> <span id="donTit"></span></div>
+<div><b>CLABE:</b> <span id="donClabe" style="font-family:ui-monospace,Menlo,monospace;letter-spacing:.5px"></span></div>
+<div style="font-size:13px;opacity:.8">Concepto sugerido: Donativo Econotopía</div>
+</div>
 <a id="donBtn" class="don" href="#" target="_blank" rel="noopener">Donar</a>
 <div class="note" id="donNote"></div>
 </section>
@@ -162,6 +213,9 @@ body.lock{overflow:hidden}
 <script>
 (function(){
 var DONA_URL="";
+var CLABE="";            // 18 dígitos de la CLABE de Nu
+var BANCO="Nu México";
+var TITULAR="Víctor Hugo Ramírez Salgado";
 var NOMBRE="Víctor Hugo Ramírez Salgado";
 var IDI={en:["English / A–Z","ABCDEFGHIJKLMNOPQRSTUVWXYZ"],es:["Español","ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"],fr:["Français","ABCDEFGHIJKLMNOPQRSTUVWXYZ"],de:["Deutsch","ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ"],it:["Italiano","ABCDEFGHILMNOPQRSTUVZ"],pt:["Português","ABCDEFGHIJKLMNOPQRSTUVWXYZ"],el:["Ελληνικά","ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"],ru:["Русский","АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"],ar:["العربية","ابتثجحخدذرزسشصضطظعغفقكلمنهوي"],zh:["中文 · Mandarín (pinyin)","ABCDEFGHIJKLMNOPQRSTUVWXYZ"],zhu:["中文 · Mandarín (zhuyin ㄅㄆㄇ)","ㄅㄆㄇㄈㄉㄊㄋㄌㄍㄎㄏㄐㄑㄒㄓㄔㄕㄖㄗㄘㄙㄧㄨㄩㄚㄛㄜㄝㄞㄟㄠㄡㄢㄣㄤㄥㄦ"],lsm:["Lengua de Señas Mexicana (letras)","ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"],yue:["粵語 · Cantonés (jyutping)","ABCDEFGHIJKLMNOPQRSTUVWXYZ"]};
 var BETA={ar:1,zh:1,zhu:1,yue:1,lsm:1};
@@ -311,11 +365,17 @@ function dec(){
 }
 $("n").oninput=dec;
 $("cp").onclick=function(){var t=$("clave").textContent;try{navigator.clipboard.writeText(t);$("cp").textContent="Copiada"}catch(e){var r=document.createRange();r.selectNodeContents($("clave"));var s=getSelection();s.removeAllRanges();s.addRange(r)}setTimeout(function(){$("cp").textContent="Copiar clave"},1500)};
-(function(){var b=$("donBtn");if(DONA_URL){b.href=DONA_URL}else{b.className+=" off";$("donNote").textContent="El sistema de pagos y el registro público se están preparando; el botón se activará cuando estén listos."}})();
+(function(){var b=$("donBtn");if(CLABE){$("donBanco").textContent=BANCO;$("donTit").textContent=TITULAR;$("donClabe").textContent=CLABE.replace(/(\d{3})(\d{3})(\d{11})(\d)/,"$1 $2 $3 $4");$("donCta").style.display="block";b.textContent="Copiar CLABE";b.removeAttribute("target");b.href="#";b.onclick=function(e){e.preventDefault();var ok=function(){$("donNote").textContent="CLABE copiada. Pégala en tu app de banco como transferencia SPEI."};if(navigator.clipboard){navigator.clipboard.writeText(CLABE).then(ok,function(){$("donNote").textContent="Copia la CLABE: "+CLABE})}else{$("donNote").textContent="Copia la CLABE: "+CLABE}};if(DONA_URL){var a=document.createElement("a");a.className="don";a.href=DONA_URL;a.target="_blank";a.rel="noopener";a.textContent="Donar en línea";a.style.marginLeft="8px";b.after(a)}}else if(DONA_URL){b.href=DONA_URL}else{b.className+=" off";$("donNote").textContent="El sistema de pagos y el registro público se están preparando; el botón se activará cuando estén listos."}})();
 fillIni();
 build();
 
 function b64e(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+var CUR_PW="";
+function u8b(u){var s="";for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function bu8(t){t=t.replace(/-/g,"+").replace(/_/g,"/");while(t.length%4)t+="=";var s=atob(t),u=new Uint8Array(s.length);for(var i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u}
+async function kdf(pw,salt){var k=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:250000,hash:"SHA-256"},k,{name:"AES-GCM",length:256},false,["encrypt","decrypt"])}
+async function seal(o,pw){var salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),k=await kdf(pw,salt),ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv:iv},k,new TextEncoder().encode(JSON.stringify(o))));return u8b(salt)+"."+u8b(iv)+"."+u8b(ct)}
+async function unseal(c,pw){var p=c.split(".");if(p.length!=3)throw 0;var k=await kdf(pw,bu8(p[0])),pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:bu8(p[1])},k,bu8(p[2]));return JSON.parse(new TextDecoder().decode(pt))}
 function b64d(t){t=t.replace(/-/g,"+").replace(/_/g,"/");while(t.length%4)t+="=";return JSON.parse(decodeURIComponent(escape(atob(t))))}
 function getMsgs(){
  var C=N*N,res=[],one=$("modo").value=="1";
@@ -373,11 +433,11 @@ function buildReply(d){
  '<div class="note" id="rpNote"></div></div>';
  function cur(){return encWith(A,$("rpT").value,+$("rpK").value)}
  $("rpT").oninput=$("rpK").onchange=function(){var n=cur();$("rpN").textContent=n?"En números: "+n:""};
- $("rpGo").onclick=function(){
+ $("rpGo").onclick=async function(){
   var n=cur();
   if(!n){$("rpNote").textContent="Escribe primero tu respuesta en la línea 1.";$("rpT").focus();return}
   var o={m:[{k:+$("rpK").value,n:n}],a:A.join(""),l:d.l||"",r:1,o:1,id:Math.random().toString(36).slice(2,10)+Date.now().toString(36)};
-  var url=(location.href||"").split("#")[0]+"#m="+b64e(o);
+  var url=(location.href||"").split("#")[0]+"#"+(CUR_PW?"e="+await seal(o,CUR_PW):"m="+b64e(o));
   $("rpL").value=url;$("rpRes").style.display="block";
   if(navigator.share){navigator.share({title:"Respuesta · El Cubo de la Comunicación",text:"Te respondo con el Cubo de la Comunicación:",url:url}).then(function(){$("rpNote").textContent="Respuesta enviada."}).catch(function(){$("rpNote").textContent="Listo. Copia el enlace y mándalo por el medio que quieras."})}
   else{copyTxt(url,$("rpCp"));$("rpNote").textContent="Enlace copiado. Pégalo en tu chat para enviarlo."}
@@ -398,6 +458,7 @@ function wireTr(d,A,texts){
    out.innerHTML=(d.m||[]).map(function(m,i){var w=texts[i].split(" ").map(function(p){return Array.from(p).join(" · ")}).join("  /  ");return '<div class="out" style="margin-top:6px"><b>Cara '+m.k+':</b> '+esc(w)+'</div>'}).join("")+'<div class="note">Deletreo por letras. Las formas de la mano deben validarse con la comunidad sorda local.</div>';
    return;
   }
+  if(!confirm("Para traducir, el texto de este mensaje se enviará a un servicio de inteligencia artificial (Claude, de Anthropic). La página no lo guarda. ¿Continuar?"))return;
   var sample=null;
   try{if(window.claude&&window.claude.use)sample=await window.claude.use("sample")}catch(e){}
   if(!sample){out.innerHTML='<div class="note">La traducción no está disponible en esta vista.</div>';return}
@@ -412,8 +473,23 @@ function wireTr(d,A,texts){
  };
 }
 function openMsg(raw,fromLink){
+ try{if(location.hash)history.replaceState(null,"",location.pathname+location.search)}catch(e){}
+ var em=raw.match(/e=([A-Za-z0-9_\-.]+)/);
+ if(em){
+  $("recBody").innerHTML='<div class="rbox">Este mensaje está cifrado. Escribe la contraseña que te dieron por otro medio.</div><input id="upw" type="password" autocomplete="off" placeholder="Contraseña"><div class="ctl" style="justify-content:flex-start"><button id="upwGo">Abrir mensaje</button></div><div class="note" id="upwN"></div>';
+  $("recReply").innerHTML="";openRec();
+  $("upwGo").onclick=async function(){var pw=$("upw").value;if(!pw)return;$("upwN").textContent="Descifrando…";
+   try{var d=await unseal(em[1],pw);CUR_PW=pw;openData(d)}catch(e){$("upwN").textContent="Contraseña incorrecta o enlace dañado."}};
+  return;
+ }
+ CUR_PW="";
  var m=raw.match(/m=([A-Za-z0-9_\-]+)/),code=m?m[1]:raw.trim(),d;
  try{d=b64d(code)}catch(e){$("recBody").innerHTML='<div class="rbox">No pude leer ese enlace o código.</div>';$("recReply").innerHTML="";openRec();return}
+ openData(d);
+}
+var CUR_ONCE=0;
+function openData(d){
+ CUR_ONCE=(d.o&&d.id)?1:0;
  if(d.o&&d.id){
   var key="cubo_seen_"+d.id,seen=false,ok=true;
   try{seen=localStorage.getItem(key)=="1"}catch(e){ok=false}
@@ -423,14 +499,17 @@ function openMsg(raw,fromLink){
   if(!ok)$("recBody").innerHTML+='<div class="note">Este navegador no permite marcar el mensaje como visto.</div>';
  }else showMsg(d);
 }
-$("mk").onclick=function(){
+$("mk").onclick=async function(){
  var ms=getMsgs();
  if(!ms.length){$("sendNote").textContent="Escribe al menos una frase arriba.";return}
  var o={m:ms,l:(IDI[idi.value]?IDI[idi.value][0]:"alfabeto propio")};if($("kc").checked)o.a=alf;
  if($("once").checked){o.o=1;o.id=Math.random().toString(36).slice(2,10)+Date.now().toString(36)}
- var code=b64e(o),base=(location.href||"").split("#")[0];
- $("lnk").value=base+"#m="+code;
- $("sendNote").textContent="Listo. Si el enlace no abre el mensaje, pega este código en 'Pega el enlace o el código': "+code.slice(0,24)+"…";
+ var pw=$("pw").value,base=(location.href||"").split("#")[0],code;
+ if(pw&&pw.length<6){$("sendNote").textContent="La contraseña debe tener al menos 6 caracteres.";return}
+ if(pw){try{code="e="+await seal(o,pw)}catch(e){$("sendNote").textContent="Este navegador no permite cifrar. Actualízalo o crea el enlace sin contraseña.";return}}
+ else code="m="+b64e(o);
+ $("lnk").value=base+"#"+code;
+ $("sendNote").textContent=pw?"Listo: mensaje cifrado. Manda la contraseña por otro medio (llamada, otro chat o en persona), nunca junto al enlace.":"Listo. Ojo: sin contraseña, cualquiera con el enlace puede leerlo.";
  $("lnk").dataset.code=code;
 };
 $("cpl").onclick=function(){
@@ -442,7 +521,77 @@ $("shl").onclick=function(){var v=$("lnk").value;if(!v)return;
  if(navigator.share){navigator.share({title:"El Cubo de la Comunicación",url:v}).catch(function(){})}
  else{$("lnk").focus();$("lnk").select()}};
 $("vr").onclick=function(){var v=$("pg").value;if(v.trim())openMsg(v)};
-if(location.hash.indexOf("#m=")==0)openMsg(location.hash);
+if(location.hash.indexOf("#m=")==0||location.hash.indexOf("#e=")==0)openMsg(location.hash,1);
+/* ---- Clave rápida &• ---- */
+(function(){
+ var q=$("q"),mir=$("qMir"),prev=[],tms=[],FADE=1600,wipeT=null;
+ function render(){
+  var v=Array.from(q.value),now=Date.now(),s=0,e=0;
+  while(s<prev.length&&s<v.length&&prev[s]==v[s])s++;
+  while(e<prev.length-s&&e<v.length-s&&prev[prev.length-1-e]==v[v.length-1-e])e++;
+  var nt=tms.slice(0,s);for(var i=s;i<v.length-e;i++)nt.push(now);nt=nt.concat(tms.slice(tms.length-e));
+  mir.textContent="";
+  v.forEach(function(ch,i){var sp=document.createElement("span");sp.textContent=ch;var age=now-(nt[i]||0);
+   if(age<FADE){sp.className="nw";sp.style.animationDelay=(-age)+"ms"}mir.appendChild(sp)});
+  mir.appendChild(document.createTextNode("​"));
+  prev=v;tms=nt;mir.scrollTop=q.scrollTop;
+ }
+ q.addEventListener("input",render);q.addEventListener("scroll",function(){mir.scrollTop=q.scrollTop});
+ $("op").oninput=function(){var v=+$("op").value;$("qWm").style.setProperty("--wm",v/100);$("opV").textContent=v+"%"};
+ function parseAmp(t){
+  t=(t||"").trim();var m=t.match(/^&\s*[•·*.]\s*/);if(!m)return null;t=t.slice(m[0].length);
+  var segs=[],re=/L([1-6])/g,last=null,x,start=0;
+  while((x=re.exec(t))){if(last)segs.push({k:last,t:t.slice(start,x.index)});else if(x.index>0)segs.push({k:1,t:t.slice(0,x.index)});last=+x[1];start=re.lastIndex}
+  if(last)segs.push({k:last,t:t.slice(start)});else if(t)segs.push({k:1,t:t});
+  segs=segs.filter(function(g){return g.t.trim()});
+  return segs.length?segs.slice(0,6):null;
+ }
+ function clearPlain(){q.value="";prev=[];tms=[];render();$("qpw").value="";$("pw").value="";fr.forEach(function(f){f.value=""});try{enc()}catch(e){}}
+ function clearLink(){clearTimeout(wipeT);$("qRes").style.display="none";["qWa","qSms","qSh"].forEach(function(id){$(id).href="#";$(id).dataset.l=""});$("lnk").value=""}
+ $("qPaste").onclick=function(){
+  if(!navigator.clipboard||!navigator.clipboard.readText){$("qNote").textContent="Mantén presionado el cuadro y toca Pegar.";q.focus();return}
+  navigator.clipboard.readText().then(function(t){q.value=t||"";render();$("qNote").textContent=parseAmp(t)?"Mensaje cargado. Escribe la contraseña y crea el enlace.":"Lo pegado no empieza con &•.";$("qpw").focus()},
+   function(){$("qNote").textContent="No se pudo leer el portapapeles. Mantén presionado el cuadro y toca Pegar.";q.focus()});
+ };
+ $("qGo").onclick=function(){
+  var segs=parseAmp(q.value),pw=$("qpw").value;
+  if(!segs){$("qNote").textContent="Empieza con &• y usa L1 a L6 antes de cada frase. Ej.: &•L1nosvemosL3enlaescuela";return}
+  if(pw.length<6){$("qNote").textContent="La contraseña es obligatoria (mínimo 6 caracteres).";$("qpw").focus();return}
+  $("modo").value=segs.length==1?"1":"6";vis();
+  fr.forEach(function(f){f.value=""});
+  segs.forEach(function(g,i){fr[i].value=g.t;fs[i].value=g.k-1});
+  try{enc()}catch(e){}
+  $("pw").value=pw;$("qNote").textContent="Cifrando…";
+  var made=(async function(){await $("mk").onclick();var l=$("lnk").value;if(!l||l.indexOf("#e=")<0)throw 0;return l})();
+  var copied;
+  try{
+   if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write)
+    copied=navigator.clipboard.write([new ClipboardItem({"text/plain":made.then(function(l){return new Blob([l],{type:"text/plain"})})})]).then(function(){return true});
+  }catch(e){}
+  if(!copied)copied=Promise.reject();
+  copied=copied.catch(function(){return made.then(function(l){return navigator.clipboard.writeText(l).then(function(){return true})}).catch(function(){return false})});
+  Promise.all([made,copied]).then(function(r){
+   var l=r[0];clearPlain();
+   var enc_=encodeURIComponent(l);
+   $("qWa").href="whatsapp://send?text="+enc_;$("qSms").href="sms:?&body="+enc_;$("qSh").dataset.l=l;
+   $("qRes").style.display="block";$("lnk").value="";
+   $("qNote").textContent=r[1]?"Enlace copiado. Ya se borró el texto y la contraseña de esta página. Pégalo en tu chat o usa un botón.":"Ya se borró el texto. Usa un botón para enviar el enlace.";
+   clearTimeout(wipeT);wipeT=setTimeout(function(){clearLink();$("qNote").textContent="El enlace se borró de la pantalla."},120000);
+  }).catch(function(){$("qNote").textContent="No se pudo crear el enlace. Revisa el mensaje e inténtalo de nuevo."});
+ };
+ function used(){setTimeout(function(){clearLink();$("qNote").textContent="Enviado. El enlace ya no está en esta pantalla."},400)}
+ $("qWa").addEventListener("click",used);$("qSms").addEventListener("click",used);
+ $("qSh").onclick=function(e){e.preventDefault();var l=this.dataset.l;if(!l)return;
+  if(navigator.share)navigator.share({url:l}).then(used,function(){});else{navigator.clipboard&&navigator.clipboard.writeText(l);used()}};
+ // Al salir de la página se borra lo que haya en pantalla
+ document.addEventListener("visibilitychange",function(){
+  if(!document.hidden)return;
+  if(CUR_ONCE&&$("rec").style.display=="block"){closeRec();$("recBody").innerHTML="";CUR_ONCE=0}
+ });
+ // Atajo de iPhone: abre la página con #pegar
+ if(location.hash=="#pegar"){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
+  setTimeout(function(){$("rapida").scrollIntoView({block:"start"});$("qNote").textContent="Toca Pegar para cargar tu mensaje &•."},50)}
+})();
 })();
 </script>
 </body>
