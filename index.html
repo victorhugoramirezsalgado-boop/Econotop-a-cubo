@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -55,6 +55,17 @@ label{font-size:13px;color:var(--mut);display:block;margin:8px 0 4px}
 a.don{display:inline-block;padding:12px 22px;border-radius:10px;background:var(--acc);color:#fff;text-decoration:none;font-size:16px;font-weight:700}
 a.don.off{opacity:.45;pointer-events:none}
 @media print{.stage,.ctl,.tool{display:none}}
+#printArea{display:none}
+@media print{body.printing>*:not(#printArea){display:none!important}body.printing #printArea{display:block!important;color:#000;background:#fff;font-family:Menlo,Consolas,"Courier New",monospace}}
+#printArea h1{font:700 1.4em Georgia,serif;margin:0 0 .2em}
+#printArea .pm{font:.8em Georgia,serif;color:#444;margin:0 0 1em}
+#printArea h2{font:700 1em Georgia,serif;margin:1.2em 0 .4em;border-bottom:1px solid #999;padding-bottom:.2em}
+#printArea .pc{white-space:pre-wrap;word-break:break-word;line-height:1.6}
+#printArea .pf{margin-top:1.5em;font:.75em Georgia,serif;color:#555;border-top:1px solid #bbb;padding-top:.4em}
+#printArea .face{break-inside:avoid;margin:0 0 .6em}
+.impg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:4px 12px}
+.chk{display:flex;gap:8px;align-items:center;color:var(--fg);font-size:14px;margin:4px 0}
+.chk input{width:auto}
 #rec{position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 24px)}
 #rec .in{max-width:640px;margin:0 auto}
 #rec h2{font-size:24px;margin:4px 0 2px;color:var(--acc)}
@@ -158,6 +169,42 @@ body.lock{overflow:hidden}
 <div class="out" id="o2"></div>
 </section>
 
+<section class="tool" id="imp">
+<h2>Imprimir código</h2>
+<div class="note" style="margin:0 0 6px">Imprime las frases de arriba en hojas normales de impresora. El código lleva tu firma de inicio y final para reconocer tus escritos al consultarlos.</div>
+<label class="chk"><input type="checkbox" id="ipN" checked> Código normal (números)</label>
+<label class="chk"><input type="checkbox" id="ipC" checked> Código corto (cara en número romano, letras en pares y total X)</label>
+<label class="chk"><input type="checkbox" id="ipT"> Texto legible (cualquiera que vea la hoja podrá leerlo)</label>
+<div class="impg">
+<div><label for="ipI">Firma de inicio</label><input id="ipI" value="3" maxlength="8" autocomplete="off"></div>
+<div><label for="ipF">Firma de final</label><input id="ipF" value="3" maxlength="8" autocomplete="off"></div>
+</div>
+<label for="ipTit">Título de la hoja (opcional)</label>
+<input id="ipTit" placeholder="Ej.: Escritos 33" autocomplete="off">
+<div class="impg">
+<div><label for="ipH">Tamaño de hoja</label><select id="ipH">
+<option value="21.59x27.94">Carta (21.6 × 27.9 cm)</option>
+<option value="21.59x34">Oficio México (21.6 × 34 cm)</option>
+<option value="21.59x35.56">Legal (21.6 × 35.6 cm)</option>
+<option value="21x29.7">A4 (21 × 29.7 cm)</option>
+<option value="14.8x21">A5 (14.8 × 21 cm)</option>
+<option value="10.16x15.24">Postal (10 × 15 cm)</option>
+<option value="27.94x43.18">Tabloide (27.9 × 43.2 cm)</option>
+<option value="p">Personalizada…</option>
+</select></div>
+<div><label for="ipO">Orientación</label><select id="ipO"><option value="v">Vertical</option><option value="h">Horizontal</option></select></div>
+<div><label for="ipL">Tamaño de letra</label><select id="ipL"><option>9</option><option>10</option><option>11</option><option selected>12</option><option>14</option><option>16</option><option>20</option><option>24</option><option>32</option></select></div>
+<div><label for="ipM">Margen (cm)</label><select id="ipM"><option>1</option><option selected>1.5</option><option>2</option><option>2.5</option></select></div>
+</div>
+<div class="impg" id="ipPers" style="display:none">
+<div><label for="ipW">Ancho (cm)</label><input id="ipW" type="number" min="5" max="120" step="0.1" value="21.59"></div>
+<div><label for="ipA">Alto (cm)</label><input id="ipA" type="number" min="5" max="200" step="0.1" value="27.94"></div>
+</div>
+<div class="out" id="ipPrev" style="white-space:pre-wrap"></div>
+<div class="note" id="ipNote"></div>
+<div class="ctl" style="justify-content:flex-start"><button id="ipGo">Imprimir</button></div>
+</section>
+
 <section class="tool">
 <h2>Enviar mensaje</h2>
 <div class="note" style="margin:0">Crea un enlace con las frases de arriba. Quien lo abra verá el mensaje en su pantalla principal y podrá responder ahí mismo.</div>
@@ -210,6 +257,7 @@ body.lock{overflow:hidden}
 
 <p class="note">Este documento presenta la idea y su funcionamiento. Un registro formal (por ejemplo ante INDAUTOR o el IMPI en México) tiene requisitos propios: conviene consultarlo con un especialista y conservar fechas y versiones de este material como evidencia de autoría.</p>
 </main>
+<div id="printArea" aria-hidden="true"></div>
 <script>
 (function(){
 var DONA_URL="";
@@ -361,6 +409,9 @@ function dec(){
   if(m<=T){var i=m-1,q=i%C,A=Array.from(alf);det.push(m+": cara "+(Math.floor(i/C)+1)+", "+A[Math.floor(q/N)]+A[q%N])}
   else det.push(m+": fuera del cubo");
  });
+
+ var raw=$("n").value.trim(),fi=raw.match(/^\[([^\]]+)\]/),ff=raw.match(/\[([^\]]+)\]$/);
+ if(fi||ff)det.unshift(esc("Firma: inicio "+(fi?fi[1]:"—")+" · final "+(ff?ff[1]:"—")));
  $("o2").innerHTML=(s||"")+(det.length?'<br><small style="color:var(--mut)">'+det.join(" · ")+"</small>":"");
 }
 $("n").oninput=dec;
@@ -522,6 +573,58 @@ $("shl").onclick=function(){var v=$("lnk").value;if(!v)return;
  else{$("lnk").focus();$("lnk").select()}};
 $("vr").onclick=function(){var v=$("pg").value;if(v.trim())openMsg(v)};
 if(location.hash.indexOf("#m=")==0||location.hash.indexOf("#e=")==0)openMsg(location.hash,1);
+/* ---- Imprimir código (33) ---- */
+(function(){
+ var ROM=["I","II","III","IV","V","VI"];
+ function firma(){return {i:$("ipI").value.trim(),f:$("ipF").value.trim()}}
+ function pares(n,k){var C=N*N,A=Array.from(alf),out=[],cnt=0;
+  n.split(" ").forEach(function(x){if(x=="/"){out.push("/");return}var v=parseInt(x,10);if(!(v>0))return;var q=(v-1)%C;out.push(A[Math.floor(q/N)]+A[q%N]);cnt++});
+  return ROM[k-1]+": "+out.join(" ")+" X"+cnt}
+ function textoDe(n){var A=Array.from(alf),t="";n.split(" ").forEach(function(x){if(x=="/")t+=" ";else{var v=parseInt(x,10);if(v>0)t+=A[(v-1)%A.length]}});return t}
+ function armar(){
+  var ms=getMsgs(),f=firma(),I=f.i?"["+f.i+"] ":"",F=f.f?" ["+f.f+"]":"",r={n:"",c:"",t:"",ms:ms};
+  if(!ms.length)return r;
+  r.n=I+ms.map(function(m){return m.n}).join(" L ")+F;
+  r.c=I+ms.map(function(m){return pares(m.n,m.k)}).join("  ·  ")+F;
+  r.t=ms.map(function(m){return "Cara "+m.k+": "+textoDe(m.n)}).join("\n");
+  return r}
+ function prev(){
+  var r=armar(),h=[];
+  if(!r.ms.length){$("ipPrev").textContent="Escribe al menos una frase en «Frases en el cubo».";return}
+  if($("ipN").checked)h.push("Normal:\n"+r.n);
+  if($("ipC").checked)h.push("Corto:\n"+r.c);
+  if($("ipT").checked)h.push("Texto:\n"+r.t);
+  $("ipPrev").textContent=h.join("\n\n")||"Elige qué imprimir.";
+ }
+ function hoja(){var w,a;if($("ipH").value=="p"){w=parseFloat($("ipW").value);a=parseFloat($("ipA").value)}else{var p=$("ipH").value.split("x");w=+p[0];a=+p[1]}
+  if(!(w>=5&&a>=5))return null;if($("ipO").value=="h"){var t=w;w=a;a=t}return {w:w,a:a}}
+ ["ipN","ipC","ipT","ipI","ipF"].forEach(function(id){$(id).addEventListener("input",prev);$(id).addEventListener("change",prev)});
+ fr.forEach(function(f){f.addEventListener("input",prev)});fs.forEach(function(f){f.addEventListener("change",prev)});
+ $("modo").addEventListener("change",prev);
+ $("ipH").onchange=function(){$("ipPers").style.display=this.value=="p"?"grid":"none"};
+ function limpiar(){document.body.classList.remove("printing");$("printArea").innerHTML="";var st=$("pageStyle");if(st)st.remove()}
+ window.addEventListener("afterprint",limpiar);
+ $("ipGo").onclick=function(){
+  var r=armar(),hj=hoja();
+  if(!r.ms.length){$("ipNote").textContent="Escribe al menos una frase en «Frases en el cubo».";return}
+  if(!($("ipN").checked||$("ipC").checked||$("ipT").checked)){$("ipNote").textContent="Elige qué imprimir.";return}
+  if(!hj){$("ipNote").textContent="Revisa el ancho y alto de la hoja (mínimo 5 cm).";return}
+  var pa=$("printArea"),fecha=new Date().toLocaleDateString("es-MX",{year:"numeric",month:"long",day:"numeric"}),f=firma();
+  pa.innerHTML="";pa.style.fontSize=$("ipL").value+"pt";
+  function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;pa.appendChild(e);return e}
+  el("h1","",$("ipTit").value.trim()||"El Cubo de la Comunicación");
+  el("p","pm","Firma: inicio "+(f.i||"—")+" · final "+(f.f||"—")+" · alfabeto de "+N+" letras ("+Array.from(alf)[0]+"…"+Array.from(alf)[N-1]+") · "+fecha);
+  if($("ipN").checked){el("h2","","Código normal");el("div","pc",r.n)}
+  if($("ipC").checked){el("h2","","Código corto");var c=(f.i?"["+f.i+"]\n":"")+r.ms.map(function(m){return pares(m.n,m.k)}).join("\n")+(f.f?"\n["+f.f+"]":"");el("div","pc",c)}
+  if($("ipT").checked){el("h2","","Texto");el("div","pc",r.t)}
+  el("div","pf","El Cubo de la Comunicación · Econotopía — Víctor Hugo Ramírez Salgado");
+  var st=document.createElement("style");st.id="pageStyle";st.textContent="@page{size:"+hj.w+"cm "+hj.a+"cm;margin:"+$("ipM").value+"cm}";document.head.appendChild(st);
+  document.body.classList.add("printing");
+  $("ipNote").textContent="En iPhone, elige la impresora o «Guardar en Archivos» (PDF) en la hoja que aparece. Si la impresora usa otra hoja, elígela ahí también.";
+  setTimeout(function(){window.print();setTimeout(limpiar,1500)},50);
+ };
+ prev();
+})();
 /* ---- Clave rápida &• ---- */
 (function(){
  var q=$("q"),mir=$("qMir"),prev=[],tms=[],FADE=1600,wipeT=null;
