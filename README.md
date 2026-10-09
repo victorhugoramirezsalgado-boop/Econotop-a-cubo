@@ -25,4 +25,8 @@ Un cubo de 6 caras que convierte letras en números para comunicarse de forma pr
 
 Donativos voluntarios para servidores, mejoras, educación, materiales y difusión, con registro público de entradas y salidas.
 
+## Licencia
+
+**Todos los derechos reservados.** Este repositorio es público solo para consulta y para usar la página tal como se ofrece. No se permite copiar, modificar, desofuscar, distribuir, usar comercialmente ni usar para entrenar inteligencia artificial sin autorización escrita del autor. Obra registrada en Safe Creative (2610077261709). Ver [LICENSE](LICENSE).
+
 © Víctor Hugo Ramírez Salgado · Econotopía. Todos los derechos reservados.
