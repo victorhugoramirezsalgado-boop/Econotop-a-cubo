@@ -11,6 +11,9 @@ Un cubo de 6 caras que convierte letras en números para comunicarse de forma pr
 ## Qué puedes hacer
 
 - **Mensajero:** escribe tu mensaje y el cubo lo convierte en una secuencia; envíalo con un enlace cifrado y una contraseña.
+  - Junto al texto: **Teclado**, **Traducir** (pide permiso antes) y **Enviar ➜**.
+  - Barra fija de envío: **Crear enlace cifrado**, **WhatsApp**, **Correo**, **SMS**, **Copiar**, **Imprimir** y **Compartir**. Quien recibe toca la liga y el mensaje se abre en el mensajero del cubo.
+- **Colores:** verde, beige, blanco concha, gris claro, gris industrial, amarillo, negro grisáceo, rojo colorado (alertas) y azul mar.
 - **Conocimiento:** elige tu alfabeto y lee secuencias del cubo.
 - **Imprimir:** lleva tu mensaje a una hoja con el formato del cubo.
 - **Teclado Cubo:** para iPhone y Android, próximamente en App Store y Google Play.
